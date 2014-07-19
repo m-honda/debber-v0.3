@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"archive/tar"
 	"github.com/laher/argo/ar"
-	"github.com/laher/debgo-v0.2/targz"
+	"github.com/debber/debber-v0.3/targz"
 	"io"
 	"io/ioutil"
 	"log"

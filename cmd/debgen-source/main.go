@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/laher/debgo-v0.2/cmd"
-	"github.com/laher/debgo-v0.2/deb"
-	"github.com/laher/debgo-v0.2/debgen"
+	"github.com/debber/debber-v0.3/cmd"
+	"github.com/debber/debber-v0.3/deb"
+	"github.com/debber/debber-v0.3/debgen"
 	"log"
 )
 

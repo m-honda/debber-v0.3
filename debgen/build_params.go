@@ -18,7 +18,7 @@ package debgen
 
 import (
 	"errors"
-	"github.com/laher/debgo-v0.2/deb"
+	"github.com/debber/debber-v0.3/deb"
 	"os"
 )
 

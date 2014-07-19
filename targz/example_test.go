@@ -12,7 +12,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"fmt"
-	"github.com/laher/debgo-v0.2/targz"
+	"github.com/debber/debber-v0.3/targz"
 	"io"
 	"log"
 	"os"

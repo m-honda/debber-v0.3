@@ -17,7 +17,7 @@
 package deb_test
 
 import (
-	"github.com/laher/debgo-v0.2/deb"
+	"github.com/debber/debber-v0.3/deb"
 	"testing"
 )
 
