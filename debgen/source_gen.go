@@ -45,7 +45,7 @@ func NewSourcePackageGenerator(sourcePackage *deb.SourcePackage, buildParams *Bu
 
 // ApplyDefaultsPureGo overrides some template variables for pure-Go packages
 func (spgen *SourcePackageGenerator) ApplyDefaultsPureGo() {
-	spgen.TemplateStrings["debian/rules"] = TemplateDebianRulesForGo
+	spgen.TemplateStrings["rules"] = TemplateDebianRulesForGo
 }
 
 // Get the default templates for source packages
@@ -71,8 +71,15 @@ func (spgen *SourcePackageGenerator) GenerateAllDefault() error {
 	if err != nil {
 		return err
 	}
-	//3. Build dsc file, including checksums
-	err = spgen.GenDscFile()
+
+	//3. Calculate checksums
+	checksums, err := spgen.CalcChecksums()
+
+	if err != nil {
+		return err
+	}
+	//4. Build dsc file
+	err = spgen.GenDscFile(checksums)
 	if err != nil {
 		return err
 	}
@@ -174,20 +181,23 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 	return nil
 }
 
-func (spgen *SourcePackageGenerator) GenDscFile() error {
-	//set up template
-	templateVars := NewTemplateData(spgen.SourcePackage.Package)
-	//4. Create dsc file (calculate checksums first)
+func (spgen *SourcePackageGenerator) CalcChecksums() (*deb.Checksums, error) {
 	cs := new(deb.Checksums)
 	err := cs.Add(filepath.Join(spgen.BuildParams.DestDir, spgen.SourcePackage.OrigFileName), spgen.SourcePackage.OrigFileName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = cs.Add(filepath.Join(spgen.BuildParams.DestDir, spgen.SourcePackage.DebianFileName), spgen.SourcePackage.DebianFileName)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	templateVars.Checksums = cs
+	return cs, nil
+}
+
+func (spgen *SourcePackageGenerator) GenDscFile(checksums *deb.Checksums) error {
+	//set up template
+	templateVars := NewTemplateData(spgen.SourcePackage.Package)
+	templateVars.Checksums = checksums
 	dscData, err := TemplateFileOrString(filepath.Join(spgen.BuildParams.TemplateDir, "source", "dsc.tpl"), TemplateDebianDsc, templateVars)
 	if err != nil {
 		return err
@@ -201,3 +211,21 @@ func (spgen *SourcePackageGenerator) GenDscFile() error {
 	}
 	return err
 }
+
+func (spgen *SourcePackageGenerator) GenSourceControlFile() error {
+	//set up template
+	templateVars := NewTemplateData(spgen.SourcePackage.Package)
+	dscData, err := TemplateFileOrString(filepath.Join(spgen.BuildParams.TemplateDir, "source", "control"), TemplateSourcedebControl, templateVars)
+	if err != nil {
+		return err
+	}
+	dscFilePath := filepath.Join(spgen.BuildParams.DestDir, "control")
+	err = ioutil.WriteFile(dscFilePath, dscData, 0644)
+	if err == nil {
+		if spgen.BuildParams.IsVerbose {
+			log.Printf("Wrote %s", dscFilePath)
+		}
+	}
+	return err
+}
+

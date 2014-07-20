@@ -8,6 +8,10 @@ import (
 	"os"
 )
 
+func InitFlagsBasic(name string) *flag.FlagSet {
+	fs := flag.NewFlagSet(name, flag.ContinueOnError)
+	return fs
+}
 func InitFlags(name string, pkg *deb.Package, build *debgen.BuildParams) *flag.FlagSet {
 
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)

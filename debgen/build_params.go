@@ -17,7 +17,6 @@
 package debgen
 
 import (
-	"errors"
 	"github.com/debber/debber-v0.3/deb"
 	"os"
 )
@@ -31,6 +30,7 @@ type BuildParams struct {
 	IsRmtemp   bool   // Delete tmp dir after execution?
 	DestDir    string // Where to generate .deb files and source debs (.dsc files etc)
 	WorkingDir string // This is the root from which to find .go files, templates, resources, etc
+	DebianDir string // This is the debian dir which stores 'control', 'changelog' and 'rules' files
 
 	TemplateDir  string // Optional. Only required if you're using templates
 	ResourcesDir string // Optional. Only if debgo packages your resources automatically.
@@ -45,6 +45,7 @@ func NewBuildParams() *BuildParams {
 	bp.IsRmtemp = true
 	bp.DestDir = deb.DistDirDefault
 	bp.WorkingDir = deb.WorkingDirDefault
+	bp.DebianDir = deb.DebianDir
 	bp.TemplateDir = deb.TemplateDirDefault
 	bp.ResourcesDir = deb.ResourcesDirDefault
 	return bp
@@ -53,21 +54,27 @@ func NewBuildParams() *BuildParams {
 
 //Initialise build directories (make Temp and Dest directories)
 func (bp *BuildParams) Init() error {
-	//make tmpDir
-	if bp.TmpDir == "" {
-		return errors.New("Temp directory not specified")
+	//make tmpDir if set
+	if bp.TmpDir != "" {
+		err := os.MkdirAll(bp.TmpDir, 0755)
+		if err != nil {
+			return err
+		}
 	}
-	err := os.MkdirAll(bp.TmpDir, 0755)
-	if err != nil {
-		return err
+	//make destDir if set
+	if bp.DestDir != "" {
+		err := os.MkdirAll(bp.DestDir, 0755)
+		if err != nil {
+			return err
+		}
 	}
-	//make destDir
-	if bp.DestDir == "" {
-		return errors.New("Destination directory not specified")
+	//make debianDir if set
+	if bp.DebianDir != "" {
+		err := os.MkdirAll(bp.DebianDir, 0755)
+		if err != nil {
+			return err
+		}
 	}
-	err = os.MkdirAll(bp.DestDir, 0755)
-	if err != nil {
-		return err
-	}
-	return err
+
+	return nil
 }

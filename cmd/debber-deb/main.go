@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/debber/debber-v0.3/deb"
-	"github.com/debber/debber-v0.3/debgen"
 	"log"
 	"os"
 )
@@ -11,15 +10,8 @@ import (
 func main() {
 	name := "debgo-deb"
 	log.SetPrefix("[" + name + "] ")
-	build := debgen.NewBuildParams()
 
-	err := build.Init()
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
-	fs.BoolVar(&build.IsRmtemp, "rmtemp", false, "Remove 'temp' dirs")
-	fs.BoolVar(&build.IsVerbose, "verbose", false, "Show log messages")
 
 	var isControl, isContents, isDebianContents bool
 	fs.BoolVar(&isControl, "control", false, "Show control")
@@ -28,7 +20,7 @@ func main() {
 
 	//var debFile string
 	//fs.StringVar(&debFile, "file", "", ".deb file")
-	err = fs.Parse(os.Args[1:])
+	err := fs.Parse(os.Args[1:])
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
