@@ -27,7 +27,7 @@ func TestCopy(t *testing.T) {
 	if pkg == npkg {
 		t.Errorf("Copy returned the same reference - not a copy")
 	}
-	if pkg.Name != npkg.Name {
+	if pkg.Get(deb.PackageFName) != npkg.Get(deb.PackageFName) {
 		t.Errorf("Copy didn't copy the same Name value")
 	}
 	t.Logf("Original: %+v", pkg)

@@ -30,7 +30,7 @@ type BuildParams struct {
 	IsRmtemp   bool   // Delete tmp dir after execution?
 	DestDir    string // Where to generate .deb files and source debs (.dsc files etc)
 	WorkingDir string // This is the root from which to find .go files, templates, resources, etc
-	DebianDir string // This is the debian dir which stores 'control', 'changelog' and 'rules' files
+	DebianDir  string // This is the debian dir which stores 'control', 'changelog' and 'rules' files
 
 	TemplateDir  string // Optional. Only required if you're using templates
 	ResourcesDir string // Optional. Only if debgo packages your resources automatically.
@@ -50,7 +50,6 @@ func NewBuildParams() *BuildParams {
 	bp.ResourcesDir = deb.ResourcesDirDefault
 	return bp
 }
-
 
 //Initialise build directories (make Temp and Dest directories)
 func (bp *BuildParams) Init() error {

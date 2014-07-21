@@ -35,7 +35,7 @@ func ApplyGoDefaults(pkg *deb.Package) {
 		}
 	}
 	pkg.ExtraData["GoPathExtra"] = append(gpe, GoPathExtraDefault)
-	pkg.BuildDepends = deb.BuildDependsDefault
-	pkg.Depends = deb.DependsDefault
+	pkg.Paragraphs[0].Set(deb.BuildDependsFName, deb.BuildDependsDefault)
+	pkg.Paragraphs[0].Set(deb.DependsFName, deb.DependsDefault)
 
 }

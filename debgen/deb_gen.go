@@ -26,16 +26,16 @@ import (
 
 //DebGenerator generates source packages using templates and some overrideable behaviours
 type DebGenerator struct {
-	DebWriter *deb.DebWriter
-	BuildParams *BuildParams
+	DebWriter              *deb.DebWriter
+	BuildParams            *BuildParams
 	DefaultTemplateStrings map[string]string
-	OrigFiles map[string]string
+	OrigFiles              map[string]string
 }
 
 //NewDebGenerator is a factory for SourcePackageGenerator.
 func NewDebGenerator(debWriter *deb.DebWriter, buildParams *BuildParams) *DebGenerator {
-	dgen := &DebGenerator{DebWriter:debWriter, BuildParams:buildParams,
-		DefaultTemplateStrings:map[string]string{}, OrigFiles:map[string]string{}}
+	dgen := &DebGenerator{DebWriter: debWriter, BuildParams: buildParams,
+		DefaultTemplateStrings: map[string]string{}, OrigFiles: map[string]string{}}
 	return dgen
 }
 
@@ -138,13 +138,13 @@ func (dgen *DebGenerator) GenDataArchive() error {
 	if dgen.BuildParams.IsVerbose {
 		log.Printf("Added executables")
 	}
-/*
-	// TODO add README.debian automatically
-	err = TarAddFiles(dataTgzw.Writer, dgen.DebWriter.Package.MappedFiles)
-	if err != nil {
-		return err
-	}
-*/
+	/*
+		// TODO add README.debian automatically
+		err = TarAddFiles(dataTgzw.Writer, dgen.DebWriter.Package.MappedFiles)
+		if err != nil {
+			return err
+		}
+	*/
 	if dgen.BuildParams.IsVerbose {
 		log.Printf("Added resources")
 	}

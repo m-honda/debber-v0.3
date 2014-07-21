@@ -30,7 +30,7 @@ tar-ignore = .bzr` //specifies files to ignore while building.
 
 export GOPATH=$(CURDIR){{range $i, $gpe := .Package.ExtraData.GoPathExtra }}:{{$gpe}}{{end}}
 
-PKGDIR=debian/{{.Package.Name}}
+PKGDIR=debian/{{.Package.Get "Package"}}
 
 %:
 	dh $@
@@ -70,57 +70,56 @@ binary-arch: clean
 binary: binary-arch`
 
 	// The debian control file (binary debs) defines package metadata
-	TemplateBinarydebControl = `Package: {{.Package.Name}}
-Priority: {{.Package.Priority}}
-{{if .Package.Maintainer}}Maintainer: {{.Package.Maintainer}}
-{{end}}Section: {{.Package.Section}}
-Version: {{.Package.Version}}
+	TemplateBinarydebControl = `Package: {{.Package.Get "Package"}}
+Priority: {{.Package.Get "Priority"}}
+{{if .Package.Get "Maintainer"}}Maintainer: {{.Package.Get "Maintainer"}}
+{{end}}Section: {{.Package.Get "Section"}}
+Version: {{.Package.Get "Version"}}
 Architecture: {{.Deb.Architecture}}
-{{if .Package.Depends}}Depends: {{.Package.Depends}}
-{{end}}{{range $key, $value := .Package.AdditionalControlData}}{{$key}}: {{$value}}
-{{end}}Description: {{.Package.Description}}
+{{if .Package.Get "Depends"}}Depends: {{.Package.Get "Depends"}}
+{{end}}Description: {{.Package.Get "Description"}}
 `
 
-	// The debian control file (source debs) defines build metadata AND package metadata
-	TemplateSourcedebControl = `Source: {{.Package.Name}}
-Build-Depends: {{.Package.BuildDepends}}
-Priority: {{.Package.Priority}}
-Maintainer: {{.Package.Maintainer}}
-Standards-Version: {{.Package.StandardsVersion}}
-Section: {{.Package.Section}}
+	// The debian control file (source debs) defines general package metadata (but not version information)
+	TemplateSourcedebControl = `Source: {{.Package.Get "Package"}}
+Section: {{.Package.Get "Section"}}
+Priority: {{.Package.Get "Priority"}}
+Maintainer: {{.Package.Get "Maintainer"}}
+Build-Depends: {{.Package.Get "BuildDepends"}}
+Standards-Version: {{.Package.Get "StandardsVersion"}}
 
-Package: {{.Package.Name}}
-Architecture: {{.Package.Architecture}}
-Depends: ${misc:Depends}{{.Package.Depends}}
-Description: {{.Package.Description}}
-{{.Package.Other}}`
+Package: {{.Package.Get "Package"}}
+Architecture: {{.Package.Get "Architecture"}}
+{{if .Package.Get "Depends"}}Depends: {{.Package.Get "Depends"}}
+{{end}}Description: {{.Package.Get "Description"}}
+{{.Package.Get "Other"}}`
 
 	// The dsc file defines package metadata AND checksums
-	TemplateDebianDsc = `Format: {{.Package.Format}}
-Source: {{.Package.Name}}
-Binary: {{.Package.Name}}
-Architecture: {{.Package.Architecture}}
-Version: {{.Package.Version}}
-Maintainer: {{.Package.Maintainer}}
-Standards-Version: {{.Package.StandardsVersion}}
-Build-Depends: {{.Package.BuildDepends}}
-Priority: {{.Package.Priority}}
-Section: {{.Package.Section}}
+	TemplateDebianDsc = `Format: {{.Package.Get "Format"}}
+Source: {{.Package.Get "Package"}}
+Binary: {{.Package.Get "Package"}}
+Architecture: {{.Package.Get "Architecture"}}
+Version: {{.Package.Get "Version"}}
+Maintainer: {{.Package.Get "Maintainer"}}
+Standards-Version: {{.Package.Get "StandardsVersion"}}
+Build-Depends: {{.Package.Get "BuildDepends"}}
+Priority: {{.Package.Get "Priority"}}
+Section: {{.Package.Get "Section"}}
 Checksums-Sha1:{{range .Checksums.ChecksumsSha1}}
  {{.Checksum}} {{.Size}} {{.File}}{{end}}
 Checksums-Sha256:{{range .Checksums.ChecksumsSha256}}
  {{.Checksum}} {{.Size}} {{.File}}{{end}}
 Files:{{range .Checksums.ChecksumsMd5}}
  {{.Checksum}} {{.Size}} {{.File}}{{end}}
-{{.Package.Other}}`
+{{.Package.Get "Other"}}`
 
-	TemplateChangelogHeader       = `{{.Package.Name}} ({{.Package.Version}}) {{.Package.Status}}; urgency=low`
-	TemplateChangelogInitialEntry = `  * Initial import`
-	TemplateChangelogFooter       = ` -- {{.Package.Maintainer}}  {{.EntryDate}}`
-	TemplateChangelogInitial      = TemplateChangelogHeader + "\n\n" + TemplateChangelogInitialEntry + "\n\n" + TemplateChangelogFooter
-	TemplateChangelogAdditionalEntry  = "\n\n" + TemplateChangelogHeader + "\n\n{{.ChangelogEntry}}\n\n" + TemplateChangelogFooter
-	TemplateDebianCopyright       = `Copyright 2014 {{.Package.Name}}`
-	TemplateDebianReadme          = `{{.Package.Name}}
+	TemplateChangelogHeader          = `{{.Package.Get "Package"}} ({{.Package.Get "Version"}}) {{.Package.Get "Status"}}; urgency=low`
+	TemplateChangelogInitialEntry    = `  * Initial import`
+	TemplateChangelogFooter          = ` -- {{.Package.Get "Maintainer"}}  {{.EntryDate}}`
+	TemplateChangelogInitial         = TemplateChangelogHeader + "\n\n" + TemplateChangelogInitialEntry + "\n\n" + TemplateChangelogFooter
+	TemplateChangelogAdditionalEntry = "\n\n" + TemplateChangelogHeader + "\n\n{{.ChangelogEntry}}\n\n" + TemplateChangelogFooter
+	TemplateDebianCopyright          = `Copyright 2014 {{.Package.Get "Package"}}`
+	TemplateDebianReadme             = `{{.Package.Get "Package"}}
 ==========
 
 `

@@ -1,8 +1,8 @@
 package deb_test
 
 import (
-	"github.com/laher/argo/ar"
 	"github.com/debber/debber-v0.3/deb"
+	"github.com/laher/argo/ar"
 	"io"
 	"io/ioutil"
 	"os"

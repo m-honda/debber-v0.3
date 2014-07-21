@@ -11,7 +11,6 @@ import (
 
 func Example_buildSourceDeb() {
 	pkg := deb.NewPackage("testpkg", "0.0.2", "me <me@b.c>", "Nice of all the package\n")
-	pkg.Description = "hiya"
 	spkg := deb.NewSourcePackage(pkg)
 	err := buildOrigArchive(spkg) // it's up to you how to build this
 	if err != nil {
@@ -29,7 +28,6 @@ func Example_buildSourceDeb() {
 
 func Test_buildSourceDeb(t *testing.T) {
 	pkg := deb.NewPackage("testpkg", "0.0.2", "me <me@b.c>", "Nice of all the package\n")
-	pkg.Description = "hiya"
 	spkg := deb.NewSourcePackage(pkg)
 	err := buildOrigArchive(spkg) // it's up to you how to build this
 	if err != nil {

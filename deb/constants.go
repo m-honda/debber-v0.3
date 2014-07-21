@@ -28,10 +28,10 @@ const (
 
 var (
 	//	ErrNoBuildFunc     = errors.New("debgo: 'BuildFunc' is nil") // error
-	OutDirDefault = "_out"
+	OutDirDefault  = "_out"
 	TempDirDefault = filepath.Join(OutDirDefault, "tmp")
 	DistDirDefault = filepath.Join(OutDirDefault, "dist")
-	DebianDir    = "debian"
+	DebianDir      = "debian"
 
 	MaintainerScripts = []string{"postinst", "postrm", "prerm", "preinst"}
 )

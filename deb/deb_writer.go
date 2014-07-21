@@ -30,7 +30,7 @@ type DebWriter struct {
 	Architecture        Architecture
 	Filename            string
 	DebianBinaryVersion string
-	ControlArchive       string
+	ControlArchive      string
 	DataArchive         string
 	MappedFiles         map[string]string
 }
@@ -111,7 +111,7 @@ func (bdeb *DebWriter) ExtractAll(destDir string) ([]string, error) {
 
 // SetDefaults sets some default properties
 func (bdeb *DebWriter) SetDefaults() {
-	bdeb.Filename = fmt.Sprintf("%s_%s_%s.deb", bdeb.Package.Name, bdeb.Package.Version, bdeb.Architecture) //goxc_0.5.2_i386.deb")
+	bdeb.Filename = fmt.Sprintf("%s_%s_%s.deb", bdeb.Package.Get(PackageFName), bdeb.Package.Get(VersionFName), bdeb.Package.Get(ArchitectureFName)) //goxc_0.5.2_i386.deb")
 	bdeb.DebianBinaryVersion = DebianBinaryVersionDefault
 	bdeb.ControlArchive = BinaryControlArchiveNameDefault
 	bdeb.DataArchive = BinaryDataArchiveNameDefault

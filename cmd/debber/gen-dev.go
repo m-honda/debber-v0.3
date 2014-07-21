@@ -7,15 +7,13 @@ import (
 	"log"
 )
 
-func main() {
-	name := "debgen-dev"
-	log.SetPrefix("[" + name + "] ")
+func genDev(input []string) {
 	//set to empty strings because they're being overridden
 	pkg := deb.NewPackage("", "", "", "")
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
-	fs := cmdutils.InitFlags(name, pkg, build)
-	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
+//	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
 	ddpkg := deb.NewDevPackage(pkg)
 
 	var sourceDir string
@@ -26,7 +24,7 @@ func main() {
 	fs.StringVar(&glob, "sources-glob", debgen.GlobGoSources, "Glob for inclusion of sources")
 	fs.StringVar(&sourcesRelativeTo, "sources-relative-to", "", "Sources relative to (it will assume relevant gopath element, unless you specify this)")
 	fs.StringVar(&sourcesDestinationDir, "sources-destination", debgen.DevGoPathDefault, "Destination dir for sources to be installed")
-	err := cmdutils.ParseFlags(name, pkg, fs)
+	err := cmdutils.ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

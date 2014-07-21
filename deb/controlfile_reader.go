@@ -1,0 +1,82 @@
+/*
+   Copyright 2013 Am Laher
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+package deb
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"log"
+	"strings"
+)
+
+// ControlFileReader reads a control file.
+type ControlFileReader struct {
+	Reader io.Reader
+}
+
+//NewControlFileReader is a factory for reading Dsc files.
+func NewControlFileReader(rdr io.Reader) *ControlFileReader {
+	return &ControlFileReader{rdr}
+}
+
+// Parse parses a stream into a package definition.
+func (dscr *ControlFileReader) Parse() (*Package, error) {
+	pkg := newPackage()
+	br := bufio.NewReader(dscr.Reader)
+	para := 0
+	lastField := ""
+	lastVal := ""
+	for {
+		line, err := br.ReadString('\n')
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+		colonIndex := strings.Index(line, ":")
+		spaceIndex := strings.Index(line, " ")
+		//New field:
+		if colonIndex >-1 && colonIndex<spaceIndex {
+			res := strings.SplitN(line, ":", 2)
+			lastField = res[0]
+			lastVal = strings.TrimSpace(res[1])
+			log.Printf("Control File entry: '%s': %s", lastField, lastVal)
+			err = pkg.Paragraphs[para].Set(lastField, lastVal)
+			if err != nil {
+				return nil, err
+			}
+		//New paragraph:
+		} else if len(strings.TrimSpace(line)) == 0 {
+			para++
+			for len(pkg.Paragraphs) < para+1 {
+				pkg.Paragraphs = append(pkg.Paragraphs, newParagraph())
+			}
+		//Additional line for previous line:
+		} else if spaceIndex==0 {
+			lastVal += "\n" + strings.TrimSpace(line)
+			err = pkg.Paragraphs[para].Set(lastField, lastVal)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, fmt.Errorf("Unexpected line: '%s'", line)
+		}
+	}
+	return pkg, nil
+
+}

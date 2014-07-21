@@ -7,15 +7,13 @@ import (
 	"log"
 )
 
-func main() {
-	name := "debgen-source"
-	log.SetPrefix("[" + name + "] ")
+func genSource(input []string) {
 	//set to empty strings because they're being overridden
 	pkg := deb.NewPackage("", "", "", "")
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
-	fs := cmdutils.InitFlags(name, pkg, build)
-	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
+//	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
 
 	var sourceDir string
 	var glob string
@@ -23,7 +21,7 @@ func main() {
 	fs.StringVar(&sourceDir, "sources", ".", "source dir")
 	fs.StringVar(&glob, "sources-glob", debgen.GlobGoSources, "Glob for inclusion of sources")
 	fs.StringVar(&sourcesRelativeTo, "sources-relative-to", "", "Sources relative to (it will assume relevant gopath element, unless you specify this)")
-	err := cmdutils.ParseFlags(name, pkg, fs)
+	err := cmdutils.ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -35,8 +33,8 @@ func main() {
 		sourcesRelativeTo = debgen.GetGoPathElement(sourceDir)
 	}
 	spkg := deb.NewSourcePackage(pkg)
-	sourcesDestinationDir := pkg.Name + "_" + pkg.Version
-	spgen := debgen.NewSourcePackageGenerator(spkg, build) 
+	sourcesDestinationDir := pkg.Get(deb.PackageFName) + "_" + pkg.Get(deb.VersionFName)
+	spgen := debgen.NewSourcePackageGenerator(spkg, build)
 	spgen.OrigFiles, err = debgen.GlobForSources(sourcesRelativeTo, sourceDir, glob, sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
 	if err != nil {
 		log.Fatalf("Error resolving sources: %v", err)

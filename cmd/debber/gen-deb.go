@@ -9,21 +9,35 @@ import (
 	"path/filepath"
 )
 
-func main() {
-	name := "debgen-deb"
-	log.SetPrefix("[" + name + "] ")
-	//set to empty strings because they're being overridden
-	pkg := deb.NewPackage("", "", "", "")
+func genDeb(input []string) {
 	build := debgen.NewBuildParams()
-	debgen.ApplyGoDefaults(pkg)
-	fs := cmdutils.InitFlags(name, pkg, build)
-
+	fs := cmdutils.InitBuildFlags(cmdName+" "+TaskGenDeb, build)
 	var binDir string
-	var resourcesDir string
+	//var resourcesDir string
+	var arch, version string
 	fs.StringVar(&binDir, "binaries", "", "directory containing binaries for each architecture. Directory names should end with the architecture")
-	fs.StringVar(&pkg.Architecture, "arch", "any", "Architectures [any,386,armhf,amd64,all]")
-	fs.StringVar(&resourcesDir, "resources", "", "directory containing resources for this platform")
-	err := cmdutils.ParseFlags(name, pkg, fs)
+	fs.StringVar(&arch, "arch", "any", "Architectures [any,386,armhf,amd64,all]")
+	//fs.StringVar(&resourcesDir, "resources", "", "directory containing resources for this platform")
+	fs.StringVar(&version, "version", "", "Package version")
+	err := fs.Parse(os.Args[2:])
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	if version == "" {
+		log.Fatalf("-version is required", version)
+	}
+	fi, err := os.Open(filepath.Join(build.DebianDir, "control"))
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	cfr := deb.NewControlFileReader(fi)
+	pkg, err := cfr.Parse()
+	pkg.Paragraphs[0].Set(deb.VersionFName, version)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+
+
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -41,7 +55,7 @@ func main() {
 	}
 	for arch, artifact := range artifacts {
 		dgen := debgen.NewDebGenerator(artifact, build)
-		err = filepath.Walk(resourcesDir, func(path string, info os.FileInfo, err2 error) error {
+		err = filepath.Walk(build.ResourcesDir, func(path string, info os.FileInfo, err2 error) error {
 			if info != nil && !info.IsDir() {
 				rel, err := filepath.Rel(resourcesDir, path)
 				if err == nil {

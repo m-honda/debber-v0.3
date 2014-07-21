@@ -26,11 +26,10 @@ import (
 	"strings"
 )
 
-
 //SourcePackageGenerator generates source packages using templates and some overrideable behaviours
 type SourcePackageGenerator struct {
-	SourcePackage *deb.SourcePackage
-	BuildParams *BuildParams
+	SourcePackage   *deb.SourcePackage
+	BuildParams     *BuildParams
 	TemplateStrings map[string]string
 	//DebianFiles map[string]string
 	OrigFiles map[string]string
@@ -38,7 +37,7 @@ type SourcePackageGenerator struct {
 
 //NewSourcePackageGenerator is a factory for SourcePackageGenerator.
 func NewSourcePackageGenerator(sourcePackage *deb.SourcePackage, buildParams *BuildParams) *SourcePackageGenerator {
-	spgen := &SourcePackageGenerator{SourcePackage:sourcePackage, BuildParams:buildParams}
+	spgen := &SourcePackageGenerator{SourcePackage: sourcePackage, BuildParams: buildParams}
 	spgen.TemplateStrings = defaultTemplateStrings()
 	return spgen
 }
@@ -119,7 +118,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 	// generate .debian.tar.gz (just containing debian/ directory)
 	tgzw, err := targz.NewWriterFromFile(filepath.Join(spgen.BuildParams.DestDir, spgen.SourcePackage.DebianFileName))
 	defer tgzw.Close()
-	resourceDir := filepath.Join(spgen.BuildParams.ResourcesDir, "source", DebianDir)
+	resourceDir := spgen.BuildParams.DebianDir
 	templateDir := filepath.Join(spgen.BuildParams.TemplateDir, "source", DebianDir)
 
 	//TODO change this to iterate over specified list of files.
@@ -146,7 +145,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 
 	// postrm/postinst etc from main store
 	for _, scriptName := range deb.MaintainerScripts {
-		resourcePath := filepath.Join(spgen.BuildParams.ResourcesDir, DebianDir, scriptName)
+		resourcePath := filepath.Join(spgen.BuildParams.DebianDir, scriptName)
 		_, err = os.Stat(resourcePath)
 		if err == nil {
 			err = TarAddFile(tgzw.Writer, resourcePath, scriptName)
@@ -154,7 +153,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 				return err
 			}
 		} else {
-			templatePath := filepath.Join(spgen.BuildParams.TemplateDir, DebianDir, scriptName+TplExtension)
+			templatePath := filepath.Join(spgen.BuildParams.TemplateDir, "source", DebianDir, scriptName+TplExtension)
 			_, err = os.Stat(templatePath)
 			//TODO handle non-EOF errors
 			if err == nil {
@@ -169,7 +168,6 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 			}
 		}
 	}
-
 	err = tgzw.Close()
 	if err != nil {
 		return err
@@ -228,4 +226,3 @@ func (spgen *SourcePackageGenerator) GenSourceControlFile() error {
 	}
 	return err
 }
-

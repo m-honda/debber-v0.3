@@ -19,7 +19,7 @@ func Example_genSourcePackage() {
 	}
 	spgen := debgen.NewSourcePackageGenerator(spkg, build)
 	spgen.ApplyDefaultsPureGo()
-	sourcesDestinationDir := pkg.Name + "_" + pkg.Version
+	sourcesDestinationDir := pkg.Get(deb.PackageFName) + "_" + pkg.Get(deb.VersionFName)
 	sourceDir := ".."
 	sourcesRelativeTo := debgen.GetGoPathElement(sourceDir)
 	spgen.OrigFiles, err = debgen.GlobForSources(sourcesRelativeTo, sourceDir, debgen.GlobGoSources, sourcesDestinationDir, []string{build.TmpDir, build.DestDir})

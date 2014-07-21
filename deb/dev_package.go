@@ -21,8 +21,8 @@ package deb
 func NewDevPackage(pkg *Package) *Package {
 	//TODO *complete* copy of properties, using reflection?
 	devpkg := Copy(pkg)
-	devpkg.Name = pkg.Name + "-dev"
-	devpkg.Architecture = "all"
+	devpkg.Paragraphs[0].Set(PackageFName, pkg.Get(PackageFName)+"-dev")
+	devpkg.Paragraphs[0].Set(ArchitectureFName, "all")
 	return devpkg
 
 }

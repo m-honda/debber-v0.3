@@ -5,24 +5,21 @@ import (
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
 	"log"
-	"path/filepath"
 	"os"
+	"path/filepath"
 	"text/template"
 )
 
-func main() {
-	name := "debgen-changelog"
-	log.SetPrefix("[" + name + "] ")
-	//set to empty strings because they're being overridden
+func genChangelog(args []string) {
 	pkg := deb.NewPackage("", "", "", "")
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
-	fs := cmdutils.InitFlags(name, pkg, build)
-	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
+	fs.StringVar(&params.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
 	var entry string
 	fs.StringVar(&entry, "entry", "", "Changelog entry data")
 
-	err := cmdutils.ParseFlags(name, pkg, fs)
+	err := cmdutils.ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -30,7 +27,7 @@ func main() {
 		log.Fatalf("Error: --entry is a required flag")
 
 	}
-	filename := filepath.Join(build.ResourcesDir, "debian", "changelog")
+	filename := filepath.Join(build.DebianDir, "changelog")
 	templateVars := debgen.NewTemplateData(pkg)
 	templateVars.ChangelogEntry = entry
 	err = os.MkdirAll(filepath.Join(build.ResourcesDir, "debian"), 0777)
@@ -82,3 +79,4 @@ func main() {
 	}
 
 }
+

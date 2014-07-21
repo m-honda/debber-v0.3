@@ -14,7 +14,6 @@ import (
 func Example_buildBinaryDeb() {
 
 	pkg := deb.NewPackage("testpkg", "0.0.2", "me", "lovely package\n")
-	pkg.Description = "hiya"
 	exesMap := map[string][]string{
 		"amd64": []string{filepath.Join(deb.TempDirDefault, "/a.amd64")},
 		"i386":  []string{filepath.Join(deb.TempDirDefault, "/a.i386")},

@@ -17,10 +17,10 @@
 package deb
 
 import (
-	"fmt"
 	"archive/tar"
-	"github.com/laher/argo/ar"
+	"fmt"
 	"github.com/debber/debber-v0.3/targz"
+	"github.com/laher/argo/ar"
 	"io"
 	"io/ioutil"
 	"log"
@@ -28,13 +28,13 @@ import (
 )
 
 type DebReader struct {
-	Reader io.Reader
-	ArReader *ar.Reader
+	Reader           io.Reader
+	ArReader         *ar.Reader
 	HasDebianVersion bool
 }
 
 func NewDebReader(rdr io.Reader) (*DebReader, error) {
-	drdr := &DebReader{Reader:rdr, HasDebianVersion: false}
+	drdr := &DebReader{Reader: rdr, HasDebianVersion: false}
 	arr, err := ar.NewReader(rdr)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,6 @@ func (drdr *DebReader) NextTar() (string, *tar.Reader, error) {
 		return hdr.Name, nil, fmt.Errorf("Unsuported file type: %s", hdr.Name)
 	}
 }
-
 
 func DebGetContents(rdr io.Reader, topLevelFilename string) ([]string, error) {
 	ret := []string{}
@@ -199,7 +198,7 @@ func DebParseMetadata(rdr io.Reader) (*Package, error) {
 				}
 				if thdr.Name == "control" {
 					hasControlFile = true
-					dscr := NewDscReader(tgzr)
+					dscr := NewControlFileReader(tgzr)
 					pkg, err = dscr.Parse()
 					if err != nil {
 						return nil, err

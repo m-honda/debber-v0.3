@@ -37,6 +37,7 @@ const (
 
 //Binary arches only
 func resolveArches(arches string) ([]Architecture, error) {
+	arches = strings.TrimSpace(arches)
 	if strings.HasPrefix(arches, "linux-") {
 		return resolveArches(strings.TrimPrefix(arches, "linux-"))
 	}

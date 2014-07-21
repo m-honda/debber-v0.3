@@ -36,11 +36,11 @@ func NewTemplateData(pkg *deb.Package) *TemplateData {
 
 //Data for templates
 type TemplateData struct {
-	Package   *deb.Package
-	Deb       *deb.DebWriter
+	Package        *deb.Package
+	Deb            *deb.DebWriter
 	EntryDate      string
 	ChangelogEntry string
-	Checksums *deb.Checksums
+	Checksums      *deb.Checksums
 }
 
 func TemplateFileOrString(templateFile string, templateDefault string, vars interface{}) ([]byte, error) {

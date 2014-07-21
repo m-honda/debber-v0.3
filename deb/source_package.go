@@ -29,8 +29,8 @@ type SourcePackage struct {
 // Initialises default filenames, using .tar.gz as the archive type
 func NewSourcePackage(pkg *Package) *SourcePackage {
 	spkg := &SourcePackage{Package: pkg}
-	spkg.DscFileName = pkg.Name + "_" + pkg.Version + ".dsc"
-	spkg.OrigFileName = pkg.Name + "_" + pkg.Version + ".orig.tar.gz"
-	spkg.DebianFileName = pkg.Name + "_" + pkg.Version + ".debian.tar.gz"
+	spkg.DscFileName = pkg.Get(PackageFName) + "_" + pkg.Get(VersionFName) + ".dsc"
+	spkg.OrigFileName = pkg.Get(PackageFName) + "_" + pkg.Get(VersionFName) + ".orig.tar.gz"
+	spkg.DebianFileName = pkg.Get(PackageFName) + "_" + pkg.Get(VersionFName) + ".debian.tar.gz"
 	return spkg
 }

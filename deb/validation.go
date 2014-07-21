@@ -40,7 +40,7 @@ func ValidateArchitecture(archString string) error {
 // See http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Source
 func ValidateName(packageName string) error {
 	if packageName == "" {
-		return fmt.Errorf("Name property is required")
+		return fmt.Errorf("'Package' field is required")
 	}
 	validName := regexp.MustCompile(`^[a-z0-9][a-z0-9+-.]+$`)
 	if !validName.MatchString(packageName) {
@@ -114,15 +114,16 @@ func ParseVersion(packageVersion string) (string, string, string, error) {
 //
 // This can be considered a work-in-progress.
 func ValidatePackage(pkg *Package) error {
-	err := ValidateName(pkg.Name)
+	err := ValidateName(pkg.Get(PackageFName))
+	if err != nil {
+		fmt.Printf("Para 0: %+v", pkg.Paragraphs[0])
+		return err
+	}
+	err = ValidateVersion(pkg.Get(VersionFName))
 	if err != nil {
 		return err
 	}
-	err = ValidateVersion(pkg.Version)
-	if err != nil {
-		return err
-	}
-	if pkg.Maintainer == "" {
+	if pkg.Get(MaintainerFName) == "" {
 		return fmt.Errorf("Maintainer property is required")
 	}
 	return nil
