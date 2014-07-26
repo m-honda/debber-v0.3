@@ -71,14 +71,18 @@ func newParagraph() *Paragraph {
 	para := &Paragraph{controlData: map[string]string{}, controlDataCaseLookup: map[string]string{}}
 	return para
 }
-func newPackage() *Package {
+
+// NewEmptyPackage returns a package with one empty paragraph and an empty map of ExtraData
+func NewEmptyPackage() *Package {
 	pkg := &Package{Paragraphs: []*Paragraph{newParagraph()}, ExtraData: map[string]interface{}{}}
 	return pkg
 }
 
+
+
 // NewPackage is a factory for a Package. Name, Version, Maintainer and Description are mandatory.
 func NewPackage(name, version, maintainer, description string) *Package {
-	pkg := newPackage()
+	pkg := NewEmptyPackage()
 	pkg.Paragraphs[0].Set(PackageFName, name)
 	pkg.Paragraphs[0].Set(VersionFName, version)
 	pkg.Paragraphs[0].Set(MaintainerFName, maintainer)
@@ -162,7 +166,7 @@ func (pkg *Paragraph) Get(key string) string {
 
 // Copy all fields
 func Copy(pkg *Package) *Package {
-	npkg := newPackage()
+	npkg := NewEmptyPackage()
 	npkg.Paragraphs = []*Paragraph{}
 	for _, para := range pkg.Paragraphs {
 		npkg.Paragraphs = append(npkg.Paragraphs, CopyPara(para))

@@ -81,18 +81,29 @@ Architecture: {{.Deb.Architecture}}
 `
 
 	// The debian control file (source debs) defines general package metadata (but not version information)
-	TemplateSourcedebControl = `Source: {{.Package.Get "Package"}}
+	TemplateSnippetSourcedebControl = `Source: {{.Package.Get "Package"}}
 Section: {{.Package.Get "Section"}}
 Priority: {{.Package.Get "Priority"}}
 Maintainer: {{.Package.Get "Maintainer"}}
 Build-Depends: {{.Package.Get "BuildDepends"}}
-Standards-Version: {{.Package.Get "StandardsVersion"}}
+Standards-Version: {{.Package.Get "StandardsVersion"}}`
 
-Package: {{.Package.Get "Package"}}
+	TemplateSnippetSourcedebControlPackage = `Package: {{.Package.Get "Package"}}
 Architecture: {{.Package.Get "Architecture"}}
 {{if .Package.Get "Depends"}}Depends: {{.Package.Get "Depends"}}
 {{end}}Description: {{.Package.Get "Description"}}
 {{.Package.Get "Other"}}`
+
+	TemplateSnippetSourcedebControlDevPackage = `Package: {{.Package.Get "Package"}}-dev
+Architecture: {{.Package.Get "Architecture"}}
+{{if .Package.Get "Depends"}}Depends: {{.Package.Get "Depends"}}
+{{end}}Description: {{.Package.Get "Description"}}
+Section: libdevel
+{{.Package.Get "Other"}}`
+
+
+	TemplateSourcedebControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage
+	TemplateSourcedebWithDevControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage + "\n\n" + TemplateSnippetSourcedebControlDevPackage
 
 	// The dsc file defines package metadata AND checksums
 	TemplateDebianDsc = `Format: {{.Package.Get "Format"}}

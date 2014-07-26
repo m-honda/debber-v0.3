@@ -119,10 +119,12 @@ func ValidatePackage(pkg *Package) error {
 		fmt.Printf("Para 0: %+v", pkg.Paragraphs[0])
 		return err
 	}
+/* Version is not required in a package (the source debian/control doesn't contain one)
 	err = ValidateVersion(pkg.Get(VersionFName))
 	if err != nil {
 		return err
 	}
+*/
 	if pkg.Get(MaintainerFName) == "" {
 		return fmt.Errorf("Maintainer property is required")
 	}

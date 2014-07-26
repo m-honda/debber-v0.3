@@ -20,7 +20,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 )
 
@@ -36,7 +35,7 @@ func NewControlFileReader(rdr io.Reader) *ControlFileReader {
 
 // Parse parses a stream into a package definition.
 func (dscr *ControlFileReader) Parse() (*Package, error) {
-	pkg := newPackage()
+	pkg := NewEmptyPackage()
 	br := bufio.NewReader(dscr.Reader)
 	para := 0
 	lastField := ""
@@ -51,11 +50,10 @@ func (dscr *ControlFileReader) Parse() (*Package, error) {
 		colonIndex := strings.Index(line, ":")
 		spaceIndex := strings.Index(line, " ")
 		//New field:
-		if colonIndex >-1 && colonIndex<spaceIndex {
+		if colonIndex >-1 && (spaceIndex==-1 || colonIndex<spaceIndex) {
 			res := strings.SplitN(line, ":", 2)
 			lastField = res[0]
 			lastVal = strings.TrimSpace(res[1])
-			log.Printf("Control File entry: '%s': %s", lastField, lastVal)
 			err = pkg.Paragraphs[para].Set(lastField, lastVal)
 			if err != nil {
 				return nil, err
@@ -74,9 +72,8 @@ func (dscr *ControlFileReader) Parse() (*Package, error) {
 				return nil, err
 			}
 		} else {
-			return nil, fmt.Errorf("Unexpected line: '%s'", line)
+			return nil, fmt.Errorf("Unexpected line: '%s' / first colon: %d / first space: %d", line, colonIndex, spaceIndex)
 		}
 	}
 	return pkg, nil
-
 }

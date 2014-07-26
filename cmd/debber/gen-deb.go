@@ -13,11 +13,11 @@ func genDeb(input []string) {
 	build := debgen.NewBuildParams()
 	fs := cmdutils.InitBuildFlags(cmdName+" "+TaskGenDeb, build)
 	var binDir string
-	//var resourcesDir string
+	var resourcesDir string
 	var arch, version string
 	fs.StringVar(&binDir, "binaries", "", "directory containing binaries for each architecture. Directory names should end with the architecture")
 	fs.StringVar(&arch, "arch", "any", "Architectures [any,386,armhf,amd64,all]")
-	//fs.StringVar(&resourcesDir, "resources", "", "directory containing resources for this platform")
+	fs.StringVar(&resourcesDir, "resources", "", "directory containing resources for this platform")
 	fs.StringVar(&version, "version", "", "Package version")
 	err := fs.Parse(os.Args[2:])
 	if err != nil {

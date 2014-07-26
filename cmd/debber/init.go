@@ -20,7 +20,10 @@ func initDebber(input []string) {
 	debgen.ApplyGoDefaults(pkg)
 	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
 	var entry string
+	var overwrite bool
 	fs.StringVar(&entry, "entry", "Initial project import", "Changelog entry data")
+	fs.BoolVar(&overwrite, "overwrite", false, "Overwrite existing files")
+	fs.StringVar(&params.Architecture, "architecture", "any", "Package Architecture (any)")
 	err := cmdutils.ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -36,7 +39,7 @@ func initDebber(input []string) {
 	//create control file
 	filename := filepath.Join(build.DebianDir, "control")
 	_, err = os.Stat(filename)
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || overwrite {
 		err = spgen.GenSourceControlFile()
 		if err != nil {
 			log.Fatalf("Error generating control file: %v", err)
@@ -50,7 +53,7 @@ func initDebber(input []string) {
 	//changelog file
 	filename = filepath.Join(build.DebianDir, "changelog")
 	_, err = os.Stat(filename)
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || overwrite {
 		templateVars := debgen.NewTemplateData(pkg)
 		templateVars.ChangelogEntry = entry
 		tpl, err := template.New("template").Parse(debgen.TemplateChangelogInitial)
@@ -80,7 +83,7 @@ func initDebber(input []string) {
 	//rules file ...
 	filename = filepath.Join(build.DebianDir, "rules")
 	_, err = os.Stat(filename)
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || overwrite {
 		templateVars := debgen.NewTemplateData(pkg)
 		tpl, err := template.New("template").Parse(spgen.TemplateStrings["rules"])
 		if err != nil {

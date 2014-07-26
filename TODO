@@ -5,8 +5,9 @@ TODOs
 v0.3
 ----
 ~~1. Rename everything to 'debber'~~
-2. Consolidate commands into subcommands as much as poss. Maybe name new command(s) debber and debber-gen
-3. Refactor deb.Package to use a map for all metadata, with getters plus case-insensitive lookups.
+2. Consolidate commands into subcommands as much as poss. debber to handle most input
+~~3. Refactor deb.Package to use a map for all metadata, with getters plus case-insensitive lookups.~~
+4. Enable multiline flags
 
 v0.2
 ----
