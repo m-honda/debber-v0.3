@@ -1,10 +1,11 @@
-Source: a2
+Source: debber
 Section: devel
 Priority: extra
-Maintainer: am
+Distribution: unstable
+Maintainer: am <am@laher.x.x>
 Build-Depends: debhelper (>= 9.1.0), golang-go
 Standards-Version: 3.9.4
 
-Package: a2
+Package: debber
 Architecture: any
 Description: Hello

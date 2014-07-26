@@ -22,7 +22,7 @@ import (
 
 // Applies go-specific information to packages.
 // Includes dependencies, Go Path information.
-func ApplyGoDefaults(pkg *deb.Package) {
+func ApplyGoDefaults(pkg *deb.Control) {
 	if pkg.ExtraData == nil {
 		pkg.ExtraData = map[string]interface{}{}
 	}

@@ -78,7 +78,7 @@ func (dgen *DebGenerator) GenControlArchive() error {
 	if err != nil {
 		return err
 	}
-	templateVars := &TemplateData{Package: dgen.DebWriter.Package, Deb: dgen.DebWriter}
+	templateVars := &TemplateData{Package: dgen.DebWriter.Control, Deb: dgen.DebWriter}
 	//templateVars.Deb = dgen.DebWriter
 
 	err = dgen.GenControlFile(controlTgzw, templateVars)

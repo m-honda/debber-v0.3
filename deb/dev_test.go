@@ -8,8 +8,9 @@ import (
 
 func Example_buildDevPackage() {
 
-	pkg := deb.NewPackage("testpkg", "0.0.2", "me", "A package\ntestpkg is a lovel package with many wow")
-	buildFunc := func(dpkg *deb.Package) error {
+
+	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	buildFunc := func(dpkg *deb.Control) error {
 		// Generate files here.
 		return nil
 	}
@@ -22,8 +23,8 @@ func Example_buildDevPackage() {
 
 func Test_buildDevPackage(t *testing.T) {
 
-	pkg := deb.NewPackage("testpkg", "0.0.2", "me", "A package\ntestpkg is a lovel package with many wow")
-	buildFunc := func(dpkg *deb.Package) error {
+	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	buildFunc := func(dpkg *deb.Control) error {
 		// Generate files here.
 		return nil
 	}

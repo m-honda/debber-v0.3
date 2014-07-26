@@ -114,9 +114,9 @@ func ParseVersion(packageVersion string) (string, string, string, error) {
 //
 // This can be considered a work-in-progress.
 func ValidatePackage(pkg *Package) error {
-	err := ValidateName(pkg.Get(PackageFName))
+	err := ValidateName(pkg.Get(SourceFName))
 	if err != nil {
-		fmt.Printf("Para 0: %+v", pkg.Paragraphs[0])
+		//fmt.Printf("Para 0: %+v", pkg.Paragraphs[0])
 		return err
 	}
 /* Version is not required in a package (the source debian/control doesn't contain one)

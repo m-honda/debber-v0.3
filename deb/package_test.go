@@ -22,7 +22,7 @@ import (
 )
 
 func TestCopy(t *testing.T) {
-	pkg := deb.NewPackage("a", "1", "me", "desc")
+	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
 	npkg := deb.Copy(pkg)
 	if pkg == npkg {
 		t.Errorf("Copy returned the same reference - not a copy")

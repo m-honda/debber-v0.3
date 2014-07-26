@@ -18,7 +18,7 @@ package deb
 
 // SourcePackage is a cross-platform package with a .dsc file.
 type SourcePackage struct {
-	Package        *Package
+	Package        *Control
 	DscFileName    string
 	OrigFileName   string
 	DebianFileName string
@@ -27,10 +27,10 @@ type SourcePackage struct {
 
 // NewSourcePackage is a factory for SourcePackage. Sets up default paths..
 // Initialises default filenames, using .tar.gz as the archive type
-func NewSourcePackage(pkg *Package) *SourcePackage {
+func NewSourcePackage(pkg *Control) *SourcePackage {
 	spkg := &SourcePackage{Package: pkg}
-	spkg.DscFileName = pkg.Get(PackageFName) + "_" + pkg.Get(VersionFName) + ".dsc"
-	spkg.OrigFileName = pkg.Get(PackageFName) + "_" + pkg.Get(VersionFName) + ".orig.tar.gz"
-	spkg.DebianFileName = pkg.Get(PackageFName) + "_" + pkg.Get(VersionFName) + ".debian.tar.gz"
+	spkg.DscFileName = pkg.Get(SourceFName) + "_" + pkg.Get(VersionFName) + ".dsc"
+	spkg.OrigFileName = pkg.Get(SourceFName) + "_" + pkg.Get(VersionFName) + ".orig.tar.gz"
+	spkg.DebianFileName = pkg.Get(SourceFName) + "_" + pkg.Get(VersionFName) + ".debian.tar.gz"
 	return spkg
 }

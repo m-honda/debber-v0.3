@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func genDeb(input []string) {
+func debGen(input []string) {
 	build := debgen.NewBuildParams()
 	fs := InitBuildFlags(cmdName+" "+TaskGenDeb, build)
 	var binDir string
@@ -23,7 +23,7 @@ func genDeb(input []string) {
 		log.Fatalf("%v", err)
 	}
 	if version == "" {
-		log.Fatalf("-version is required", version)
+		log.Fatalf("Error: --version is a required flag")
 	}
 	fi, err := os.Open(filepath.Join(build.DebianDir, "control"))
 	if err != nil {
@@ -31,10 +31,17 @@ func genDeb(input []string) {
 	}
 	cfr := deb.NewControlFileReader(fi)
 	pkg, err := cfr.Parse()
-	pkg.Paragraphs[0].Set(deb.VersionFName, version)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
+
+	debpara := deb.CopyPara(pkg.Paragraphs[1])
+
+	debpkg := deb.NewEmptyControl()
+	debpkg.Paragraphs = append(debpkg.Paragraphs, debpara)
+	debpkg.Paragraphs[0].Set(deb.VersionFName, version)
+	debpkg.Paragraphs[0].Set(deb.ArchitectureFName, arch)
+	debpkg.ExtraData = pkg.ExtraData
 
 
 	if err != nil {
@@ -48,7 +55,7 @@ func genDeb(input []string) {
 	//log.Printf("Resources: %v", build.Resources)
 	// TODO determine this platform
 	//err = bpkg.Build(build, debgen.GenBinaryArtifact)
-	artifacts, err := deb.NewWriters(pkg)
+	artifacts, err := deb.NewWriters(debpkg)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

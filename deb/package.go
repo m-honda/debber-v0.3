@@ -17,164 +17,63 @@
 package deb
 
 import (
-	//	"log"
-	//	"reflect"
-	"fmt"
 	"strings"
 )
 
 // Package is the base unit for this library.
 // A *Package contains metadata.
 type Package struct {
-	Paragraphs []*Paragraph
-	ExtraData  map[string]interface{} // Optional for templates
-}
-
-type Paragraph struct {
 	controlData           map[string]string // This map should contain all keys/values, with keys using the standard camel case
 	controlDataCaseLookup map[string]string // Case sensitive lookups. TODO
 }
 
-var (
-	PackageFName     = "Package"
-	VersionFName     = "Version"
-	DescriptionFName = "Description"
-	MaintainerFName  = "Maintainer"
 
-	ArchitectureFName = "Architecture" // Supported values: "all", "x386", "amd64", "armhf". TODO: armel
-
-	DependsFName    = "Depends" // Depends
-	RecommendsFName = "Recommends"
-	SuggestsFName   = "Suggests"
-	EnhancesFName   = "Enhances"
-	PreDependsFName = "PreDepends"
-	ConflictsFName  = "Conflicts"
-	BreaksFName     = "Breaks"
-	ProvidesFName   = "Provides"
-	ReplacesFName   = "Replaces"
-
-	BuildDependsFName      = "BuildDepends" // BuildDepends is only required for "sourcedebs".
-	BuildDependsIndepFName = "BuildDependsIndep"
-	ConflictsIndepFName    = "ConflictsIndep"
-	BuiltUsingFName        = "BuiltUsing"
-
-	PriorityFName         = "Priority"
-	StandardsVersionFName = "StandardsVersion"
-	SectionFName          = "Section"
-	FormatFName           = "Format"
-	StatusFName           = "Status"
-	OtherFName            = "Other"
-	SourceFName           = "Source"
-)
-
-func newParagraph() *Paragraph {
-	para := &Paragraph{controlData: map[string]string{}, controlDataCaseLookup: map[string]string{}}
+func NewPackage() *Package {
+	para := &Package{controlData: map[string]string{}, controlDataCaseLookup: map[string]string{}}
 	return para
 }
 
-// NewEmptyPackage returns a package with one empty paragraph and an empty map of ExtraData
-func NewEmptyPackage() *Package {
-	pkg := &Package{Paragraphs: []*Paragraph{newParagraph()}, ExtraData: map[string]interface{}{}}
-	return pkg
-}
-
-
-
-// NewPackage is a factory for a Package. Name, Version, Maintainer and Description are mandatory.
-func NewPackage(name, version, maintainer, description string) *Package {
-	pkg := NewEmptyPackage()
-	pkg.Paragraphs[0].Set(PackageFName, name)
-	pkg.Paragraphs[0].Set(VersionFName, version)
-	pkg.Paragraphs[0].Set(MaintainerFName, maintainer)
-	pkg.Paragraphs[0].Set(DescriptionFName, description)
-	SetDefaults(pkg)
-	return pkg
-}
-
-// Sets fields which can be initialised appropriately
-func SetDefaults(pkg *Package) {
-	pkg.Paragraphs[0].Set(ArchitectureFName, "any") //default ...
-	pkg.Paragraphs[0].Set(PriorityFName, PriorityDefault)
-	pkg.Paragraphs[0].Set(StandardsVersionFName, StandardsVersionDefault)
-	pkg.Paragraphs[0].Set(SectionFName, SectionDefault)
-	pkg.Paragraphs[0].Set(FormatFName, FormatDefault)
-	pkg.Paragraphs[0].Set(StatusFName, StatusDefault)
-	//pkg.MappedFiles = map[string]string{}
-}
-
-// GetArches resolves architecture(s) and return as a slice
-func (pkg *Package) GetArches() ([]Architecture, error) {
-	_, arch, exists := pkg.Paragraphs[0].GetExtended(ArchitectureFName)
-	
-	if exists {
-		arches, err := resolveArches(arch)
-		return arches, err
-	}
-	if len(pkg.Paragraphs) > 1 {
-		_, arch2, exists2 := pkg.Paragraphs[1].GetExtended(ArchitectureFName)
-		if exists2 {
-			arches, err := resolveArches(arch2)
-			return arches, err
-		}
-	}
-	return nil, fmt.Errorf("Architecture field not set")
-
-}
-
 // Set sets a control field by name
-func (pkg *Paragraph) Set(key, value string) error {
-	existingKey, exists := pkg.controlDataCaseLookup[strings.ToLower(key)]
-	if exists && existingKey != key {
-		return fmt.Errorf("Key exists with different case. %s != %s", key, existingKey)
-	}
-	pkg.controlData[key] = value
-	pkg.controlDataCaseLookup[strings.ToLower(key)] = key
+func (pkg *Package) Set(key, value string) error {
+	nkey := normaliseKey(key)
+	//existingVal, exists := pkg.controlData[nkey]
+	pkg.controlData[nkey] = value
 	return nil
 }
 
-//Get finds the first occurence of the specified value, checking each paragraph in turn
-func (pkg *Package) Get(key string) string {
-	for _, paragraph := range pkg.Paragraphs {
-		//return pkg.Paragraphs[0].Get(key)
-		_, val, exists := paragraph.GetExtended(key)
-		if exists {
-			return val
+func normaliseKey(input string) string {
+	isUcase := true
+	newString := ""
+	for _, ch := range input {
+		if isUcase {
+			newString += strings.ToUpper(string(ch))
+		} else {
+			newString += strings.ToLower(string(ch))
+		}
+		if ch == '-' {
+			isUcase = true
+		} else {
+			isUcase = false
 		}
 	}
-	//not found
-	return ""
+	return newString
 }
 
 // GetExtended gets a control field by name, returning key, value & 'exists'
-func (pkg *Paragraph) GetExtended(key string) (string, string, bool) {
-	myKey, exists := pkg.controlDataCaseLookup[strings.ToLower(key)]
-	if !exists {
-		return "", "", exists
-	}
-	val, exists := pkg.controlData[myKey]
-	return myKey, val, exists
+func (pkg *Package) GetExtended(key string) (string, string, bool) {
+	nkey := normaliseKey(key)
+	val, exists := pkg.controlData[nkey]
+	return nkey, val, exists
 }
 
-func (pkg *Paragraph) Get(key string) string {
-	myKey, exists := pkg.controlDataCaseLookup[strings.ToLower(key)]
-	if !exists {
-		return ""
-	}
-	val, exists := pkg.controlData[myKey]
+func (pkg *Package) Get(key string) string {
+	nkey := normaliseKey(key)
+	val, _ := pkg.controlData[nkey]
 	return val
 }
 
-// Copy all fields
-func Copy(pkg *Package) *Package {
-	npkg := NewEmptyPackage()
-	npkg.Paragraphs = []*Paragraph{}
-	for _, para := range pkg.Paragraphs {
-		npkg.Paragraphs = append(npkg.Paragraphs, CopyPara(para))
-	}
-	return npkg
-}
-func CopyPara(pkg *Paragraph) *Paragraph {
-	npkg := newParagraph()
+func CopyPara(pkg *Package) *Package {
+	npkg := NewPackage()
 	for k, v := range pkg.controlData {
 		npkg.controlData[k] = v
 	}
@@ -184,19 +83,32 @@ func CopyPara(pkg *Paragraph) *Paragraph {
 	return npkg
 }
 
-/*
-func Copy(pkg *Package) *Package {
-	//ptype := reflect.TypeOf(pkg)
-	npkg := &Package{}
-	pkgVal := reflect.ValueOf(pkg).Elem()
-	npkgVal := reflect.ValueOf(npkg).Elem()
-	ptype := pkgVal.Type()
-	for i := 0; i < ptype.NumField(); i++ {
-		source := pkgVal.Field(i)
-		dest := npkgVal.Field(i)
-		log.Printf("%v => %v", source, dest)
-		dest.Set(source)
+//merge 2 packages for the purposes of generating a binary package
+func Merge(inpkg *Package, in2pkg *Package, ignoreKeys []string) *Package {
+	npkg := CopyPara(inpkg)
+	for k, v := range in2pkg.controlData {
+		//check ignore
+		isIgnore := false
+		for _, ik := range ignoreKeys {
+			if ik == k {
+				isIgnore = true
+			}
+		}
+		//overwrite ...
+		if !isIgnore {
+			_, exists := npkg.controlData[k]
+			if !exists {
+				npkg.controlData[k] = v
+			}
+		}
 	}
 	return npkg
+}
+/*
+func Transform(ctrl *Control, id int) {
+	debpkg := CopyPara(ctrl.Paragraphs[id])
+	debctrl := NewEmptyControl()
+	debctrl.Paragraphs = append(debctrl.Paragraphs, debpkg)
+	return debpkg
 }
 */

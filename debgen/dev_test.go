@@ -7,7 +7,7 @@ import (
 )
 
 func Example_genDevPackage() {
-	pkg := deb.NewPackage("testpkg", "0.0.2", "me", "Dummy package for doing nothing\n")
+	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
 
 	ddpkg := deb.NewDevPackage(pkg)
 	build := debgen.NewBuildParams()

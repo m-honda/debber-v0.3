@@ -34,8 +34,8 @@ func NewControlFileReader(rdr io.Reader) *ControlFileReader {
 }
 
 // Parse parses a stream into a package definition.
-func (dscr *ControlFileReader) Parse() (*Package, error) {
-	pkg := NewEmptyPackage()
+func (dscr *ControlFileReader) Parse() (*Control, error) {
+	pkg := NewEmptyControl()
 	br := bufio.NewReader(dscr.Reader)
 	para := 0
 	lastField := ""
@@ -62,7 +62,7 @@ func (dscr *ControlFileReader) Parse() (*Package, error) {
 		} else if len(strings.TrimSpace(line)) == 0 {
 			para++
 			for len(pkg.Paragraphs) < para+1 {
-				pkg.Paragraphs = append(pkg.Paragraphs, newParagraph())
+				pkg.Paragraphs = append(pkg.Paragraphs, NewPackage())
 			}
 		//Additional line for previous line:
 		} else if spaceIndex==0 {

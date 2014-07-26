@@ -28,11 +28,11 @@ func InitBuildFlags(name string, build *debgen.BuildParams) (*flag.FlagSet) {
 	fs.StringVar(&build.WorkingDir, "working-dir", build.WorkingDir, "Working directory")
 	fs.StringVar(&build.TemplateDir, "template-dir", build.TemplateDir, "Template directory")
 	fs.StringVar(&build.ResourcesDir, "resources-dir", build.ResourcesDir, "Resources directory")
-	fs.StringVar(&build.DebianDir, "debian-dir", build.DebianDir, "'debian' dir (contains control file, changelog, etc)")
+	fs.StringVar(&build.DebianDir, "debian-dir", build.DebianDir, "'debian' dir (contains control file, changelog, postinst, etc)")
 	return fs
 }
 
-func InitFlags(name string, pkg *deb.Package, build *debgen.BuildParams) (*flag.FlagSet, *Params) {
+func InitFlags(name string, pkg *deb.Control, build *debgen.BuildParams) (*flag.FlagSet, *Params) {
 	fs := InitBuildFlags(name, build)
 
 	pkgv := new(Params)
@@ -43,19 +43,23 @@ func InitFlags(name string, pkg *deb.Package, build *debgen.BuildParams) (*flag.
 	return fs, pkgv
 }
 
-func ParseFlags(pkg *deb.Package, params *Params, fs *flag.FlagSet) error {
+func ParseFlags(pkg *deb.Control, params *Params, fs *flag.FlagSet) error {
 	err := fs.Parse(os.Args[2:])
 	if err != nil {
 		return err
 	}
-	pkg.Paragraphs[0].Set(deb.PackageFName, params.Package)
+	pkg.Paragraphs[0].Set(deb.SourceFName, params.Package)
 	pkg.Paragraphs[0].Set(deb.VersionFName, params.Version)
 	pkg.Paragraphs[0].Set(deb.MaintainerFName, params.Maintainer)
 	pkg.Paragraphs[0].Set(deb.DescriptionFName, params.Description)
 	pkg.Paragraphs[0].Set(deb.ArchitectureFName, params.Architecture)
+	if len(pkg.Paragraphs) < 2 {
+		pkg.Paragraphs = append(pkg.Paragraphs, deb.NewPackage())
+	}
+	pkg.Paragraphs[1].Set(deb.PackageFName, params.Package)
 	if err == nil {
 		//validation ...
-		err = deb.ValidatePackage(pkg)
+		err = deb.ValidatePackage(pkg.Paragraphs[0])
 		if err != nil {
 			println("")
 			fmt.Fprintf(os.Stderr, "Usage:\n")

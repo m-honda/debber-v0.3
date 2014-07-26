@@ -8,7 +8,7 @@ import (
 
 func genSource(input []string) {
 	//set to empty strings because they're being overridden
-	pkg := deb.NewPackage("", "", "", "")
+	pkg := deb.NewEmptyControl()
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
 	fs, params := InitFlags(cmdName, pkg, build)

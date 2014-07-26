@@ -9,23 +9,41 @@ import (
 	"text/template"
 )
 
-func genChangelog(args []string) {
-	pkg := deb.NewPackage("", "", "", "")
+//Adds an entry to the changelog
+func changelogAdd(args []string) {
 	build := debgen.NewBuildParams()
-	debgen.ApplyGoDefaults(pkg)
-	fs, params := InitFlags(cmdName, pkg, build)
-	fs.StringVar(&params.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	fs := InitBuildFlags(cmdName+" "+TaskChangelogAdd, build)
+	var version string
+	fs.StringVar(&version, "version", "", "Package Version")
+	var architecture string
+	fs.StringVar(&architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	var distribution string
+	fs.StringVar(&distribution, "distribution", "unstable", "Distribution (unstable is recommended until Debian accept the package into testing/stable)")
 	var entry string
 	fs.StringVar(&entry, "entry", "", "Changelog entry data")
 
-	err := ParseFlags(pkg, params, fs)
+	err := fs.Parse(os.Args[2:])
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
+	if version == "" {
+		log.Fatalf("Error: --version is a required flag")
+	}
 	if entry == "" {
 		log.Fatalf("Error: --entry is a required flag")
-
 	}
+	controlFilename := filepath.Join(build.DebianDir, "control")
+	fi, err := os.Open(controlFilename)
+	if os.IsNotExist(err) {
+		log.Fatalf("file 'control' not found in debian-dir %s: %v", build.DebianDir, err)
+	}
+	cfr := deb.NewControlFileReader(fi)
+	pkg, err := cfr.Parse()
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	pkg.Paragraphs[0].Set("Version", version)
+	pkg.Paragraphs[0].Set("Distribution", distribution)
 	filename := filepath.Join(build.DebianDir, "changelog")
 	templateVars := debgen.NewTemplateData(pkg)
 	templateVars.ChangelogEntry = entry
@@ -33,10 +51,9 @@ func genChangelog(args []string) {
 	if err != nil {
 		log.Fatalf("Error making dirs: %v", err)
 	}
-
 	_, err = os.Stat(filename)
 	if os.IsNotExist(err) {
-		tpl, err := template.New("template").Parse(debgen.TemplateChangelogInitial)
+		tpl, err := template.New("changelog-new").Parse(debgen.TemplateChangelogInitial)
 		if err != nil {
 			log.Fatalf("Error parsing template: %v", err)
 		}
@@ -57,7 +74,7 @@ func genChangelog(args []string) {
 	} else if err != nil {
 		log.Fatalf("Error reading existing changelog: %v", err)
 	} else {
-		tpl, err := template.New("template").Parse(debgen.TemplateChangelogAdditionalEntry)
+		tpl, err := template.New("changelog-add").Parse(debgen.TemplateChangelogAdditionalEntry)
 		if err != nil {
 			log.Fatalf("Error parsing template: %v", err)
 		}

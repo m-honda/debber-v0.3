@@ -10,7 +10,7 @@ import (
 
 func Example_genBinaryPackage() {
 
-	pkg := deb.NewPackage("testpkg", "0.0.2", "me <a@me.org>", "Dummy package for doing nothing\n")
+	pkg := deb.NewControl("testpkg", "0.0.2", "me", "<a@me.org>", "Dummy package for doing nothing", "testpkg is a dummy package")
 
 	build := debgen.NewBuildParams()
 	build.Init()

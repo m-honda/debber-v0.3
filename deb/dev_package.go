@@ -18,7 +18,7 @@ package deb
 
 // NewDevPackage is a factory for creating '-dev' packages from packages.
 // It just does a copy, appends "-dev" to the name, and sets the
-func NewDevPackage(pkg *Package) *Package {
+func NewDevPackage(pkg *Control) *Control {
 	//TODO *complete* copy of properties, using reflection?
 	devpkg := Copy(pkg)
 	devpkg.Paragraphs[0].Set(PackageFName, pkg.Get(PackageFName)+"-dev")

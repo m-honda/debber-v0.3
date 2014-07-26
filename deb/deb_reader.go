@@ -158,14 +158,14 @@ func DebExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilenam
 }
 
 // DebParseMetadata reads an artifact's contents.
-func DebParseMetadata(rdr io.Reader) (*Package, error) {
+func DebParseMetadata(rdr io.Reader) (*Control, error) {
 
 	arr, err := ar.NewReader(rdr)
 	if err != nil {
 		return nil, err
 	}
 
-	var pkg *Package
+	var pkg *Control
 	pkg = nil
 	hasDataArchive := false
 	hasControlArchive := false

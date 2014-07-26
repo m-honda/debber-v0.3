@@ -26,7 +26,7 @@ import (
 
 // Writer is an architecture-specific deb
 type Writer struct {
-	Package             *Package
+	Control             *Control
 	Architecture        Architecture
 	Filename            string
 	DebianBinaryVersion string
@@ -37,7 +37,7 @@ type Writer struct {
 
 // NewWriters gets and returns an artifact for each architecture.
 // Returns an error if the package's architecture is un-parseable
-func NewWriters(pkg *Package) (map[Architecture]*Writer, error) {
+func NewWriters(pkg *Control) (map[Architecture]*Writer, error) {
 	arches, err := pkg.GetArches()
 	if err != nil {
 		return nil, err
@@ -51,8 +51,8 @@ func NewWriters(pkg *Package) (map[Architecture]*Writer, error) {
 }
 
 // Factory of platform build information
-func NewWriter(pkg *Package, architecture Architecture) *Writer {
-	bdeb := &Writer{Package: pkg, Architecture: architecture}
+func NewWriter(pkg *Control, architecture Architecture) *Writer {
+	bdeb := &Writer{Control: pkg, Architecture: architecture}
 	bdeb.SetDefaults()
 	return bdeb
 }
@@ -111,7 +111,7 @@ func (bdeb *Writer) ExtractAll(destDir string) ([]string, error) {
 
 // SetDefaults sets some default properties
 func (bdeb *Writer) SetDefaults() {
-	bdeb.Filename = fmt.Sprintf("%s_%s_%s.deb", bdeb.Package.Get(PackageFName), bdeb.Package.Get(VersionFName), bdeb.Package.Get(ArchitectureFName)) //goxc_0.5.2_i386.deb")
+	bdeb.Filename = fmt.Sprintf("%s_%s_%s.deb", bdeb.Control.Get(PackageFName), bdeb.Control.Get(VersionFName), bdeb.Architecture) //goxc_0.5.2_i386.deb")
 	bdeb.DebianBinaryVersion = DebianBinaryVersionDefault
 	bdeb.ControlArchive = BinaryControlArchiveNameDefault
 	bdeb.DataArchive = BinaryDataArchiveNameDefault

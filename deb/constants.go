@@ -48,6 +48,38 @@ const (
 	DebianDir      = "debian"
 )
 
+const (
+	PackageFName     = "Package"
+	VersionFName     = "Version"
+	DescriptionFName = "Description"
+	MaintainerFName  = "Maintainer"
+
+	ArchitectureFName = "Architecture" // Supported values: "all", "x386", "amd64", "armhf". TODO: armel
+
+	DependsFName    = "Depends" // Depends
+	RecommendsFName = "Recommends"
+	SuggestsFName   = "Suggests"
+	EnhancesFName   = "Enhances"
+	PreDependsFName = "PreDepends"
+	ConflictsFName  = "Conflicts"
+	BreaksFName     = "Breaks"
+	ProvidesFName   = "Provides"
+	ReplacesFName   = "Replaces"
+
+	BuildDependsFName      = "BuildDepends" // BuildDepends is only required for "sourcedebs".
+	BuildDependsIndepFName = "BuildDependsIndep"
+	ConflictsIndepFName    = "ConflictsIndep"
+	BuiltUsingFName        = "BuiltUsing"
+
+	PriorityFName         = "Priority"
+	StandardsVersionFName = "StandardsVersion"
+	SectionFName          = "Section"
+	FormatFName           = "Format"
+	StatusFName           = "Status"
+	OtherFName            = "Other"
+	SourceFName           = "Source"
+)
+
 var (
 	//TempDirDefault is the default directory for intermediate files
 	TempDirDefault = filepath.Join(outDirDefault, "tmp")

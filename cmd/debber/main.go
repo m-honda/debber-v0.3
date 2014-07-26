@@ -6,18 +6,18 @@ import (
 )
 const (
 	TaskInit = "init"
-	TaskGenChangelog = "gen:changelog"
-	TaskGenDeb = "gen:deb"
-	TaskGenDev = "gen:dev"
-	TaskGenSource = "gen:source"
+	TaskChangelogAdd = "changelog:add"
+	TaskGenDeb = "deb:gen"
 	TaskDebControl = "deb:control"
 	TaskDebContents = "deb:contents"
 	TaskDebContentsDebian = "deb:contents-debian"
+	TaskGenDev = "dev:gen"
+	TaskGenSource = "source:gen"
 )
 
 var tasks = []string{
 	TaskInit,
-	TaskGenChangelog,
+	TaskChangelogAdd,
 	TaskGenDeb,
 	TaskGenDev,
 	TaskGenSource,
@@ -34,15 +34,13 @@ func main() {
 	}
 	task := os.Args[1]
 	args := os.Args[2:]
-	//var debFile string
-	//fs.StringVar(&debFile, "file", "", ".deb file")
 	switch task {
 	case TaskInit:
 		initDebber(args)
-	case TaskGenChangelog:
-		genChangelog(args)
+	case TaskChangelogAdd:
+		changelogAdd(args)
 	case TaskGenDeb:
-		genDeb(args)
+		debGen(args)
 	case TaskGenDev:
 		genDev(args)
 	case TaskGenSource:

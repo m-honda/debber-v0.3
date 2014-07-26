@@ -1,5 +1,17 @@
-a2 () unreleased; urgency=low
+debber (0.3.0) unstable; urgency=low
 
   * Initial import
 
- -- am  Thu, 24 Jul 2014 15:42:05 +1200
+ -- am <am@laher.x.x>  Sat, 26 Jul 2014 20:56:58 +1200
+
+debber (0.3.0) ; urgency=low
+
+more changes
+
+ -- am <am@laher.x.x>  Sat, 26 Jul 2014 21:08:40 +1200
+
+debber (0.3.0) ; urgency=low
+
+more changes
+
+ -- am <am@laher.x.x>  Sat, 26 Jul 2014 21:09:20 +1200

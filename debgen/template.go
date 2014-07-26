@@ -26,7 +26,7 @@ import (
 )
 
 // initialize "template data" object
-func NewTemplateData(pkg *deb.Package) *TemplateData {
+func NewTemplateData(pkg *deb.Control) *TemplateData {
 	//Entry date format day-of-week, dd month yyyy hh:mm:ss +zzzz
 	t := time.Now()
 	entryDate := t.Format(ChangelogDateLayout)
@@ -36,7 +36,7 @@ func NewTemplateData(pkg *deb.Package) *TemplateData {
 
 //Data for templates
 type TemplateData struct {
-	Package        *deb.Package
+	Package        *deb.Control
 	Deb            *deb.Writer
 	EntryDate      string
 	ChangelogEntry string

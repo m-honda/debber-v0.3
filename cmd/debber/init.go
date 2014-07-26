@@ -13,19 +13,24 @@ var cmdName = "debber"
 
 func initDebber(input []string) {
 	//set to nothing
-	pkg := deb.NewPackage("", "", "", "")
+	pkg := deb.NewEmptyControl()
 	build := debgen.NewBuildParams()
 	build.DestDir = "debian"
-	debgen.ApplyGoDefaults(pkg)
 	fs, params := InitFlags(cmdName, pkg, build)
 	var entry string
 	var overwrite bool
+	var flavour string
 	fs.StringVar(&entry, "entry", "Initial project import", "Changelog entry data")
 	fs.BoolVar(&overwrite, "overwrite", false, "Overwrite existing files")
 	fs.StringVar(&params.Architecture, "architecture", "any", "Package Architecture (any)")
+	fs.StringVar(&flavour, "flav", "go:exe", "'flavour' implies a set of defaults - currently, one of 'go:exe', 'go:pkg', 'dev' or ''")
+	//TODO flavour
 	err := ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
+	}
+	if flavour == "go:exe" {
+		debgen.ApplyGoDefaults(pkg)
 	}
 	err = build.Init()
 	if err != nil {
@@ -33,7 +38,9 @@ func initDebber(input []string) {
 	}
 	spkg := deb.NewSourcePackage(pkg)
 	spgen := debgen.NewSourcePackageGenerator(spkg, build)
-	spgen.ApplyDefaultsPureGo()
+	if flavour == "go:exe" {
+		spgen.ApplyDefaultsPureGo()
+	}
 
 	//create control file
 	filename := filepath.Join(build.DebianDir, "control")
