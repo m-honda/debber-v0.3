@@ -1,4 +1,4 @@
-package cmdutils
+package main
 
 import (
 	"flag"

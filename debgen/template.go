@@ -37,7 +37,7 @@ func NewTemplateData(pkg *deb.Package) *TemplateData {
 //Data for templates
 type TemplateData struct {
 	Package        *deb.Package
-	Deb            *deb.DebWriter
+	Deb            *deb.Writer
 	EntryDate      string
 	ChangelogEntry string
 	Checksums      *deb.Checksums

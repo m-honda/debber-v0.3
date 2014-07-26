@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/debber/debber-v0.3/cmd"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
 	"log"
@@ -18,13 +17,13 @@ func initDebber(input []string) {
 	build := debgen.NewBuildParams()
 	build.DestDir = "debian"
 	debgen.ApplyGoDefaults(pkg)
-	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
+	fs, params := InitFlags(cmdName, pkg, build)
 	var entry string
 	var overwrite bool
 	fs.StringVar(&entry, "entry", "Initial project import", "Changelog entry data")
 	fs.BoolVar(&overwrite, "overwrite", false, "Overwrite existing files")
 	fs.StringVar(&params.Architecture, "architecture", "any", "Package Architecture (any)")
-	err := cmdutils.ParseFlags(pkg, params, fs)
+	err := ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

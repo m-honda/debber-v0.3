@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/debber/debber-v0.3/cmd"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
 	"log"
@@ -11,7 +10,7 @@ import (
 
 func genDeb(input []string) {
 	build := debgen.NewBuildParams()
-	fs := cmdutils.InitBuildFlags(cmdName+" "+TaskGenDeb, build)
+	fs := InitBuildFlags(cmdName+" "+TaskGenDeb, build)
 	var binDir string
 	var resourcesDir string
 	var arch, version string
@@ -49,7 +48,7 @@ func genDeb(input []string) {
 	//log.Printf("Resources: %v", build.Resources)
 	// TODO determine this platform
 	//err = bpkg.Build(build, debgen.GenBinaryArtifact)
-	artifacts, err := deb.NewDebWriters(pkg)
+	artifacts, err := deb.NewWriters(pkg)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

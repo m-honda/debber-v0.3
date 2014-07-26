@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/debber/debber-v0.3/cmd"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
 	"log"
@@ -14,12 +13,12 @@ func genChangelog(args []string) {
 	pkg := deb.NewPackage("", "", "", "")
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
-	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
+	fs, params := InitFlags(cmdName, pkg, build)
 	fs.StringVar(&params.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
 	var entry string
 	fs.StringVar(&entry, "entry", "", "Changelog entry data")
 
-	err := cmdutils.ParseFlags(pkg, params, fs)
+	err := ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

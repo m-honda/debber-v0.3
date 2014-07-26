@@ -24,7 +24,7 @@ import (
 // Default build function for Dev packages.
 // Implement your own if you prefer
 func GenDevArtifact(ddpkg *deb.Package, build *BuildParams, mappedFiles map[string]string) error {
-	artifacts, err := deb.NewDebWriters(ddpkg)
+	artifacts, err := deb.NewWriters(ddpkg)
 	if err != nil {
 		return err
 	}

@@ -5,33 +5,55 @@ import (
 )
 
 const (
-	DebianBinaryVersionDefault = "2.0"         // This is the current version as specified in .deb archives (filename debian-binary)
-	DebianCompatDefault        = "9"           // compatibility. Current version
-	FormatDefault              = "3.0 (quilt)" // Format as in a .dsc file
-	StatusDefault              = "unreleased"  // Status is unreleased by default. Change this once you're happy with it.
+	//DebianBinaryVersionDefault is the current version as specified in .deb archives (filename debian-binary)
+	DebianBinaryVersionDefault = "2.0"
+	//DebianCompatDefault - compatibility. Current version
+	DebianCompatDefault        = "9"
+	//FormatDefault - the format specified in the dsc file (3.0 quilt uses a .debian.gz file rather than a .diff.gz file)
+	FormatDefault              = "3.0 (quilt)"
+	// StatusDefault is unreleased by default. Change this once you're happy with it.
+	StatusDefault              = "unreleased"
 
-	SectionDefault          = "devel"                           //TODO: correct to use this?
-	PriorityDefault         = "extra"                           //Most packages should be 'extra'
-	DependsDefault          = ""                                //No dependencies
-	BuildDependsDefault     = "debhelper (>= 9.1.0), golang-go" //Default build dependencies for Go packages
-	StandardsVersionDefault = "3.9.4"                           //Current standards version
-	ArchitectureDefault     = "any"                             //Any is the default architecture for packages
+	//SectionDefault - devel seems to be the most common value
+	SectionDefault          = "devel"
+	//PriorityDefault - 'extra' means 'low priority'
+	PriorityDefault         = "extra"
+	//DependsDefault - No dependencies by default
+	DependsDefault          = ""
+	//BuildDependsDefault - debhelper recommended for any package
+	BuildDependsDefault     = "debhelper (>= 9.1.0)"
+	//BuildDependsGoDefault - golang required
+	BuildDependsGoDefault     = "debhelper (>= 9.1.0), golang-go"
 
+	//StandardsVersionDefault - standards version is specified in the control file
+	StandardsVersionDefault = "3.9.4"
+
+	//ArchitectureDefault -'any' is the default architecture for source packages - not for binary debs
+	ArchitectureDefault     = "any"
+
+	//TemplateDirDefault - the place where control file templates are kept
 	TemplateDirDefault  = "templates"
+	//ResourcesDirDefault - the place where portable files are stored.
 	ResourcesDirDefault = "resources"
+	//WorkingDirDefault - the directory for build process.
 	WorkingDirDefault   = "."
 
-	ExeDirDefault                   = "/usr/bin" //default directory for exes within the control archive
+	//ExeDirDefault - the default directory for exes within the data archive
+	ExeDirDefault                   = "/usr/bin" 
 	BinaryDataArchiveNameDefault    = "data.tar.gz"
 	BinaryControlArchiveNameDefault = "control.tar.gz"
+
+	//OutDirDefault is the default output directory for temp or dist files
+	outDirDefault  = "_out"
+	DebianDir      = "debian"
 )
 
 var (
-	//	ErrNoBuildFunc     = errors.New("debgo: 'BuildFunc' is nil") // error
-	OutDirDefault  = "_out"
-	TempDirDefault = filepath.Join(OutDirDefault, "tmp")
-	DistDirDefault = filepath.Join(OutDirDefault, "dist")
-	DebianDir      = "debian"
+	//TempDirDefault is the default directory for intermediate files
+	TempDirDefault = filepath.Join(outDirDefault, "tmp")
+
+	//DistDirDefault is the default directory for built artifacts
+	DistDirDefault = filepath.Join(outDirDefault, "dist")
 
 	MaintainerScripts = []string{"postinst", "postrm", "prerm", "preinst"}
 )

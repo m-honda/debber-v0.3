@@ -24,8 +24,8 @@ import (
 	"path/filepath"
 )
 
-// DebWriter is an architecture-specific deb
-type DebWriter struct {
+// Writer is an architecture-specific deb
+type Writer struct {
 	Package             *Package
 	Architecture        Architecture
 	Filename            string
@@ -35,31 +35,31 @@ type DebWriter struct {
 	MappedFiles         map[string]string
 }
 
-// NewDebWriters gets and returns an artifact for each architecture.
+// NewWriters gets and returns an artifact for each architecture.
 // Returns an error if the package's architecture is un-parseable
-func NewDebWriters(pkg *Package) (map[Architecture]*DebWriter, error) {
+func NewWriters(pkg *Package) (map[Architecture]*Writer, error) {
 	arches, err := pkg.GetArches()
 	if err != nil {
 		return nil, err
 	}
-	ret := map[Architecture]*DebWriter{}
+	ret := map[Architecture]*Writer{}
 	for _, arch := range arches {
-		archArtifact := NewDebWriter(pkg, arch)
+		archArtifact := NewWriter(pkg, arch)
 		ret[arch] = archArtifact
 	}
 	return ret, nil
 }
 
 // Factory of platform build information
-func NewDebWriter(pkg *Package, architecture Architecture) *DebWriter {
-	bdeb := &DebWriter{Package: pkg, Architecture: architecture}
+func NewWriter(pkg *Package, architecture Architecture) *Writer {
+	bdeb := &Writer{Package: pkg, Architecture: architecture}
 	bdeb.SetDefaults()
 	return bdeb
 }
 
 /*
 // GetReader opens up a new .ar reader
-func (bdeb *DebWriter) GetReader() (*ar.Reader, error) {
+func (bdeb *Writer) GetReader() (*ar.Reader, error) {
 	fi, err := os.Open(bdeb.Filename)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (bdeb *DebWriter) GetReader() (*ar.Reader, error) {
 // ExtractAll extracts all contents from the Ar archive.
 // It returns a slice of all filenames.
 // In case of any error, it returns the error immediately
-func (bdeb *DebWriter) ExtractAll(destDir string) ([]string, error) {
+func (bdeb *Writer) ExtractAll(destDir string) ([]string, error) {
 	arr, err := bdeb.GetReader()
 	if err != nil {
 		return nil, err
@@ -110,14 +110,14 @@ func (bdeb *DebWriter) ExtractAll(destDir string) ([]string, error) {
 */
 
 // SetDefaults sets some default properties
-func (bdeb *DebWriter) SetDefaults() {
+func (bdeb *Writer) SetDefaults() {
 	bdeb.Filename = fmt.Sprintf("%s_%s_%s.deb", bdeb.Package.Get(PackageFName), bdeb.Package.Get(VersionFName), bdeb.Package.Get(ArchitectureFName)) //goxc_0.5.2_i386.deb")
 	bdeb.DebianBinaryVersion = DebianBinaryVersionDefault
 	bdeb.ControlArchive = BinaryControlArchiveNameDefault
 	bdeb.DataArchive = BinaryDataArchiveNameDefault
 }
 
-func (bdeb *DebWriter) writeBytes(aw *ar.Writer, filename string, bytes []byte) error {
+func (bdeb *Writer) writeBytes(aw *ar.Writer, filename string, bytes []byte) error {
 	hdr := &ar.Header{
 		Name: filename,
 		Size: int64(len(bytes))}
@@ -130,7 +130,7 @@ func (bdeb *DebWriter) writeBytes(aw *ar.Writer, filename string, bytes []byte) 
 	return nil
 }
 
-func (bdeb *DebWriter) writeFromFile(aw *ar.Writer, filename string) error {
+func (bdeb *Writer) writeFromFile(aw *ar.Writer, filename string) error {
 	finf, err := os.Stat(filename)
 	if err != nil {
 		return err
@@ -158,7 +158,7 @@ func (bdeb *DebWriter) writeFromFile(aw *ar.Writer, filename string) error {
 
 }
 
-func (bdeb *DebWriter) Build(tempDir, destDir string) error {
+func (bdeb *Writer) Build(tempDir, destDir string) error {
 	wtr, err := os.Create(filepath.Join(destDir, bdeb.Filename))
 	if err != nil {
 		return err

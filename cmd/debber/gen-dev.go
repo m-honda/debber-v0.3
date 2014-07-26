@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/debber/debber-v0.3/cmd"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
 	"log"
@@ -12,7 +11,7 @@ func genDev(input []string) {
 	pkg := deb.NewPackage("", "", "", "")
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
-	fs, params := cmdutils.InitFlags(cmdName, pkg, build)
+	fs, params := InitFlags(cmdName, pkg, build)
 //	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
 	ddpkg := deb.NewDevPackage(pkg)
 
@@ -24,7 +23,7 @@ func genDev(input []string) {
 	fs.StringVar(&glob, "sources-glob", debgen.GlobGoSources, "Glob for inclusion of sources")
 	fs.StringVar(&sourcesRelativeTo, "sources-relative-to", "", "Sources relative to (it will assume relevant gopath element, unless you specify this)")
 	fs.StringVar(&sourcesDestinationDir, "sources-destination", debgen.DevGoPathDefault, "Destination dir for sources to be installed")
-	err := cmdutils.ParseFlags(pkg, params, fs)
+	err := ParseFlags(pkg, params, fs)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

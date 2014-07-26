@@ -26,14 +26,14 @@ import (
 
 //DebGenerator generates source packages using templates and some overrideable behaviours
 type DebGenerator struct {
-	DebWriter              *deb.DebWriter
+	DebWriter              *deb.Writer
 	BuildParams            *BuildParams
 	DefaultTemplateStrings map[string]string
 	OrigFiles              map[string]string
 }
 
 //NewDebGenerator is a factory for SourcePackageGenerator.
-func NewDebGenerator(debWriter *deb.DebWriter, buildParams *BuildParams) *DebGenerator {
+func NewDebGenerator(debWriter *deb.Writer, buildParams *BuildParams) *DebGenerator {
 	dgen := &DebGenerator{DebWriter: debWriter, BuildParams: buildParams,
 		DefaultTemplateStrings: map[string]string{}, OrigFiles: map[string]string{}}
 	return dgen

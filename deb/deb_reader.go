@@ -27,14 +27,17 @@ import (
 	"strings"
 )
 
-type DebReader struct {
+
+//Reader is a wrapper around an io.Reader and an ar.Reader.
+type Reader struct {
 	Reader           io.Reader
 	ArReader         *ar.Reader
 	HasDebianVersion bool
 }
 
-func NewDebReader(rdr io.Reader) (*DebReader, error) {
-	drdr := &DebReader{Reader: rdr, HasDebianVersion: false}
+//NewReader is a factory for deb.Reader
+func NewReader(rdr io.Reader) (*Reader, error) {
+	drdr := &Reader{Reader: rdr, HasDebianVersion: false}
 	arr, err := ar.NewReader(rdr)
 	if err != nil {
 		return nil, err
@@ -43,8 +46,8 @@ func NewDebReader(rdr io.Reader) (*DebReader, error) {
 	return drdr, err
 }
 
-//Gets next tar header for supported types
-func (drdr *DebReader) NextTar() (string, *tar.Reader, error) {
+//NextTar gets next tar header (for supported tar archive types - initially just tar.gz)
+func (drdr *Reader) NextTar() (string, *tar.Reader, error) {
 	for {
 		hdr, err := drdr.ArReader.Next()
 		if err != nil {
@@ -63,6 +66,8 @@ func (drdr *DebReader) NextTar() (string, *tar.Reader, error) {
 	}
 }
 
+//DebGetContents just lists the contents of a tar.gz file within the archive
+//TODO: review the need for this function
 func DebGetContents(rdr io.Reader, topLevelFilename string) ([]string, error) {
 	ret := []string{}
 	fileNotFound := true
@@ -106,6 +111,8 @@ func DebGetContents(rdr io.Reader, topLevelFilename string) ([]string, error) {
 	return ret, nil
 }
 
+//DebExtractFileL2 extracts a file from a tar.gz within the archive.
+//TODO: review the need for this function
 func DebExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilename string, destination io.Writer) error {
 	arr, err := ar.NewReader(rdr)
 	if err != nil {
@@ -140,10 +147,9 @@ func DebExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilenam
 					_, err = io.Copy(destination, tgzr)
 					tgzr.Close()
 					return nil
-				} else {
-					//SKIP
-					log.Printf("File %s", thdr.Name)
 				}
+				// else skip this file
+				log.Printf("File %s", thdr.Name)
 			}
 			tgzr.Close()
 		}
@@ -151,7 +157,7 @@ func DebExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilenam
 	return fmt.Errorf("File not found")
 }
 
-// ParseDebMetadata reads an artifact's contents.
+// DebParseMetadata reads an artifact's contents.
 func DebParseMetadata(rdr io.Reader) (*Package, error) {
 
 	arr, err := ar.NewReader(rdr)

@@ -29,10 +29,14 @@ import (
 type Architecture string
 
 const (
-	ArchI386  Architecture = "i386"  // x86
-	ArchArmhf Architecture = "armhf" //ARMv7 TODO: armel
-	ArchAmd64 Architecture = "amd64" //For 64-bit machines
-	ArchAll   Architecture = "all"   //for binary packages
+	//ArchI386 represents x86 machines
+	ArchI386  Architecture = "i386"  
+	//ArchArmhf represents ARMv7 (TODO: armel)
+	ArchArmhf Architecture = "armhf"
+	//ArchAmd64 represents 64-bit machines.
+	ArchAmd64 Architecture = "amd64"
+	//ArchAll is for binary packages.
+	ArchAll   Architecture = "all"   
 )
 
 //Binary arches only

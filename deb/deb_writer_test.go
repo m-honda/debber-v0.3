@@ -22,14 +22,14 @@ func Example_buildBinaryDeb() {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	artifacts, err := deb.NewDebWriters(pkg)
+	artifacts, err := deb.NewWriters(pkg)
 	if err != nil {
 		log.Fatalf("Error building binary: %v", err)
 	}
 	artifacts[deb.ArchAmd64].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.amd64")}
 	artifacts[deb.ArchI386].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.i386")}
 	artifacts[deb.ArchArmhf].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.armhf")}
-	buildDeb := func(art *deb.DebWriter) error {
+	buildDeb := func(art *deb.Writer) error {
 		//generate artifact here ...
 		return nil
 	}
@@ -53,14 +53,14 @@ func Test_buildBinaryDeb(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	artifacts, err := deb.NewDebWriters(pkg)
+	artifacts, err := deb.NewWriters(pkg)
 	if err != nil {
 		t.Fatalf("Error building binary: %v", err)
 	}
 	artifacts[deb.ArchAmd64].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.amd64")}
 	artifacts[deb.ArchI386].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.i386")}
 	artifacts[deb.ArchArmhf].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.armhf")}
-	buildDeb := func(art *deb.DebWriter) error {
+	buildDeb := func(art *deb.Writer) error {
 		archiveFilename := filepath.Join(deb.TempDirDefault, art.ControlArchive)
 		controlTgzw, err := targz.NewWriterFromFile(archiveFilename)
 		if err != nil {
@@ -89,6 +89,10 @@ func Test_buildBinaryDeb(t *testing.T) {
 		}
 		//TODO add files here ...
 		err = dataTgzw.Close()
+		if err != nil {
+			return err
+		}
+		err = os.MkdirAll(deb.DistDirDefault, 0777)
 		if err != nil {
 			return err
 		}
