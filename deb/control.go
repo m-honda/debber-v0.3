@@ -25,7 +25,6 @@ import (
 // A *Control contains one or more paragraphs
 type Control []*Package
 
-
 // NewEmptyControl returns a package with one empty paragraph and an empty map of ExtraData
 func NewControlEmpty() *Control {
 	ctrl := &Control{NewPackage()}

@@ -18,7 +18,6 @@ import (
 	"os"
 )
 
-
 func Example() {
 	// Create a buffer to write our archive to.
 	wtr := new(bytes.Buffer)
@@ -87,4 +86,3 @@ func Example() {
 	// Contents of todo.txt:
 	// Get animal handling licence.
 }
-

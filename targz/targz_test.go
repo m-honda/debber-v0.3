@@ -1,4 +1,3 @@
-
 package targz_test
 
 import (
@@ -85,24 +84,24 @@ func Test_fs(t *testing.T) {
 }
 
 func reader(w io.Writer) io.Reader {
-		fi := w.(*os.File)
-		err := fi.Close()
-		if err != nil {
-			log.Fatalln(err)
-		}
+	fi := w.(*os.File)
+	err := fi.Close()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-		r, err := os.Open(filename)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		return r
+	r, err := os.Open(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return r
 }
 
 func writer() io.Writer {
-		fi, err := os.Create(filename)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		return fi
+	fi, err := os.Create(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return fi
 
 }

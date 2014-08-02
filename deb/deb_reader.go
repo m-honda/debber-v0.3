@@ -27,7 +27,6 @@ import (
 	"strings"
 )
 
-
 //Reader is a wrapper around an io.Reader and an ar.Reader.
 type Reader struct {
 	Reader           io.Reader
@@ -64,97 +63,6 @@ func (drdr *Reader) NextTar() (string, *tar.Reader, error) {
 		// else return error
 		return hdr.Name, nil, fmt.Errorf("Unsuported file type: %s", hdr.Name)
 	}
-}
-
-//DebGetContents just lists the contents of a tar.gz file within the archive
-//TODO: review the need for this function
-func DebGetContents(rdr io.Reader, topLevelFilename string) ([]string, error) {
-	ret := []string{}
-	fileNotFound := true
-	arr, err := ar.NewReader(rdr)
-	if err != nil {
-		return nil, err
-	}
-	for {
-		hdr, err := arr.Next()
-		if err == io.EOF {
-			// end of ar archive
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		if hdr.Name == topLevelFilename {
-			fileNotFound = false
-			tgzr, err := targz.NewReader(arr)
-			if err != nil {
-				tgzr.Close()
-				return nil, err
-			}
-			for {
-				thdr, err := tgzr.Next()
-				if err == io.EOF {
-					// end of tar.gz archive
-					break
-				}
-				if err != nil {
-					tgzr.Close()
-					return nil, err
-				}
-				ret = append(ret, thdr.Name)
-			}
-		}
-	}
-	if fileNotFound {
-		return nil, fmt.Errorf("File not found")
-	}
-	return ret, nil
-}
-
-//DebExtractFileL2 extracts a file from a tar.gz within the archive.
-//TODO: review the need for this function
-func DebExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilename string, destination io.Writer) error {
-	arr, err := ar.NewReader(rdr)
-	if err != nil {
-		return err
-	}
-	for {
-		hdr, err := arr.Next()
-		if err == io.EOF {
-			// end of ar archive
-			break
-		}
-		if err != nil {
-			return err
-		}
-		if hdr.Name == topLevelFilename {
-			tgzr, err := targz.NewReader(arr)
-			if err != nil {
-				tgzr.Close()
-				return err
-			}
-			for {
-				thdr, err := tgzr.Next()
-				if err == io.EOF {
-					// end of tar.gz archive
-					break
-				}
-				if err != nil {
-					tgzr.Close()
-					return err
-				}
-				if thdr.Name == secondLevelFilename {
-					_, err = io.Copy(destination, tgzr)
-					tgzr.Close()
-					return nil
-				}
-				// else skip this file
-				log.Printf("File %s", thdr.Name)
-			}
-			tgzr.Close()
-		}
-	}
-	return fmt.Errorf("File not found")
 }
 
 // DebParseMetadata reads an artifact's contents.

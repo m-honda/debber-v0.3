@@ -8,15 +8,16 @@ import (
 	"path/filepath"
 	"strings"
 )
+
 type debGenOpts struct {
-	bin386Glob string
-	binArmhfGlob string
-	binAmd64Glob string
-	binAnyGlob string
-	resourcesGlob string
+	bin386Glob               string
+	binArmhfGlob             string
+	binAmd64Glob             string
+	binAnyGlob               string
+	resourcesGlob            string
 	sourcesGlob, sourcesDest string
-	version string
-	archFilter string
+	version                  string
+	archFilter               string
 }
 
 func debGen(input []string) {
@@ -28,10 +29,10 @@ func debGen(input []string) {
 	fs.StringVar(&opts.binArmhfGlob, "bin-armhf", "*armhf/*", "Glob pattern for binaries for the armhf platform.")
 	fs.StringVar(&opts.binAmd64Glob, "bin-amd64", "*amd64/*", "Glob pattern for binaries for the amd64 platform.")
 	fs.StringVar(&opts.binAnyGlob, "bin-any", "*any/*", "Glob pattern for binaries for *any* platform.")
-	fs.StringVar(&opts.sourcesDest, "sources-dest", debgen.DevGoPathDefault + "/src", "directory containing sources.")
+	fs.StringVar(&opts.sourcesDest, "sources-dest", debgen.DevGoPathDefault+"/src", "directory containing sources.")
 
-//TODO filter outputs by arch?
-//	fs.StringVar(&opts.archFilter, "arch-filter", "", "Filter by Architecture. Comma-separated [386,armhf,amd64,all]") 
+	//TODO filter outputs by arch?
+	//	fs.StringVar(&opts.archFilter, "arch-filter", "", "Filter by Architecture. Comma-separated [386,armhf,amd64,all]")
 
 	fs.StringVar(&opts.resourcesGlob, "resources", "", "directory containing resources for this platform")
 	fs.StringVar(&opts.version, "version", "", "Package version")
@@ -64,7 +65,7 @@ func debGen(input []string) {
 	sourcePara := ctrl.SourceParas()[0]
 	log.Printf("sourcePara: %+v", sourcePara)
 	for _, binPara := range ctrl.BinaryParas() {
-//TODO check -dev package here ...
+		//TODO check -dev package here ...
 		debpara := deb.CopyPara(binPara)
 		debpara.Set(deb.VersionFName, opts.version)
 		debpara.Set(deb.SectionFName, sourcePara.Get(deb.SectionFName))
@@ -81,7 +82,7 @@ func debGen(input []string) {
 				}
 				log.Printf("sources matching glob: %+v", sources)
 			}
-		
+
 		} else {
 			// bin dirs
 		}
@@ -96,7 +97,7 @@ func debGen(input []string) {
 			dgen := debgen.NewDebGenerator(artifact, build)
 			for _, source := range sources {
 				//NOTE: this should not use filepath.Join because it should always use forward-slash
-				dgen.OrigFiles[opts.sourcesDest + "/" + source] = source
+				dgen.OrigFiles[opts.sourcesDest+"/"+source] = source
 			}
 			// add resources ...
 			err = filepath.Walk(build.ResourcesDir, func(path string, info os.FileInfo, err2 error) error {
@@ -129,23 +130,23 @@ func debGen(input []string) {
 				}
 				log.Printf("Binaries matching glob for '%s': %+v", arch, bins)
 				for _, bin := range bins {
-					dgen.OrigFiles[deb.ExeDirDefault + "/" + bin] = bin
+					dgen.OrigFiles[deb.ExeDirDefault+"/"+bin] = bin
 				}
 			}
-/*
-			archBinDir := filepath.Join(binDir, string(arch))
-			err = filepath.Walk(archBinDir, func(path string, info os.FileInfo, err2 error) error {
-				if info != nil && !info.IsDir() {
-					rel, err := filepath.Rel(binDir, path)
-					if err == nil {
-						dgen.OrigFiles[rel] = path
+			/*
+				archBinDir := filepath.Join(binDir, string(arch))
+				err = filepath.Walk(archBinDir, func(path string, info os.FileInfo, err2 error) error {
+					if info != nil && !info.IsDir() {
+						rel, err := filepath.Rel(binDir, path)
+						if err == nil {
+							dgen.OrigFiles[rel] = path
+						}
+						return err
 					}
-					return err
-				}
-				return nil
-			})
-*/			
-			
+					return nil
+				})
+			*/
+
 			err = dgen.GenerateAllDefault()
 			if err != nil {
 				log.Fatalf("Error building for '%s': %v", arch, err)

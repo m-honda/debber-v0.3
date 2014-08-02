@@ -32,9 +32,10 @@ type ControlFileReader struct {
 func NewControlFileReader(rdr io.Reader) *ControlFileReader {
 	return &ControlFileReader{rdr}
 }
-const ( 
-	beginPGPSignature = "-----BEGIN PGP SIGNATURE-----"
-	endPGPSignature = "-----END PGP SIGNATURE-----"
+
+const (
+	beginPGPSignature     = "-----BEGIN PGP SIGNATURE-----"
+	endPGPSignature       = "-----END PGP SIGNATURE-----"
 	beginPGPSignedMessage = "-----BEGIN PGP SIGNED MESSAGE-----"
 )
 
@@ -69,31 +70,25 @@ func (dscr *ControlFileReader) Parse() (*Control, error) {
 			default:
 				return nil, fmt.Errorf("Unrecognised PGP line: %s", line)
 			}
-		// part of signature.
+			// part of signature.
 		} else if isSig {
 			// ignore this signature line.
-		//New field:
-		} else if colonIndex >-1 && (spaceIndex==-1 || colonIndex<spaceIndex) {
+			//New field:
+		} else if colonIndex > -1 && (spaceIndex == -1 || colonIndex < spaceIndex) {
 			res := strings.SplitN(line, ":", 2)
 			lastField = res[0]
 			lastVal = strings.TrimSpace(res[1])
-			err = (*ctrl)[para].Set(lastField, lastVal)
-			if err != nil {
-				return nil, err
-			}
-		//New paragraph:
+			(*ctrl)[para].Set(lastField, lastVal)
+			//New paragraph:
 		} else if len(strings.TrimSpace(line)) == 0 {
 			para++
 			for len(*ctrl) < para+1 {
 				*ctrl = append(*ctrl, NewPackage())
 			}
-		//Additional line for previous line:
-		} else if spaceIndex==0 {
+			//Additional line for previous line:
+		} else if spaceIndex == 0 {
 			lastVal += "\n" + strings.TrimSpace(line)
-			err = (*ctrl)[para].Set(lastField, lastVal)
-			if err != nil {
-				return nil, err
-			}
+			(*ctrl)[para].Set(lastField, lastVal)
 		} else {
 			return nil, fmt.Errorf("Unexpected line: '%s' / first colon: %d / first space: %d", line, colonIndex, spaceIndex)
 		}

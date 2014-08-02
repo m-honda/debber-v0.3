@@ -33,11 +33,9 @@ func NewPackage() *Package {
 }
 
 // Set sets a control field by name
-func (pkg *Package) Set(key, value string) error {
+func (pkg *Package) Set(key, value string) {
 	nkey := NormaliseFieldKey(key)
-	//existingVal, exists := pkg.controlData[nkey]
 	pkg.controlData[nkey] = value
-	return nil
 }
 
 func NormaliseFieldKey(input string) string {

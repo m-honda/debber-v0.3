@@ -104,10 +104,10 @@ Architecture: {{.Package.Get "Architecture"}}
 Section: libdevel
 {{.Package.Get "Other"}}`
 
-/*
-	TemplateSourcedebControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage
-	TemplateSourcedebWithDevControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage + "\n\n" + TemplateSnippetSourcedebControlDevPackage
-*/
+	/*
+		TemplateSourcedebControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage
+		TemplateSourcedebWithDevControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage + "\n\n" + TemplateSnippetSourcedebControlDevPackage
+	*/
 	// The dsc file defines package metadata AND checksums
 	TemplateDebianDsc = `Format: {{.Package.Get "Format"}}
 Source: {{.Package.Get "Source"}}

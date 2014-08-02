@@ -9,10 +9,10 @@ import (
 )
 
 type sourceGenOpts struct {
-	sourceDir string
+	sourceDir         string
 	sourcesRelativeTo string
-	sourcesGlob string
-	version string
+	sourcesGlob       string
+	version           string
 }
 
 func sourceGen(input []string) {
@@ -35,7 +35,6 @@ func sourceGen(input []string) {
 	if opts.version == "" {
 		log.Fatalf("Error: --version is a required flag")
 	}
-
 
 	if opts.sourcesRelativeTo == "" {
 		opts.sourcesRelativeTo = debgen.GetGoPathElement(opts.sourceDir)

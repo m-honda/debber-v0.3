@@ -30,8 +30,8 @@ func NewTemplateData(pkg *deb.Control) *TemplateData {
 	//Entry date format day-of-week, dd month yyyy hh:mm:ss +zzzz
 	t := time.Now()
 	entryDate := t.Format(ChangelogDateLayout)
-	templateVars := TemplateData{Package: pkg, EntryDate: entryDate, Checksums: nil, 
-	ExtraData: extraData()}
+	templateVars := TemplateData{Package: pkg, EntryDate: entryDate, Checksums: nil,
+		ExtraData: extraData()}
 	return &templateVars
 }
 
@@ -39,13 +39,13 @@ func extraData() map[string]interface{} {
 	gpe := []string{}
 	extraData := map[string]interface{}{}
 	/*
-	ext, ok := extraData["GoPathExtra"]
-	if !ok {
-		switch t := ext.(type) {
-		case []string:
-			gpe = t
+		ext, ok := extraData["GoPathExtra"]
+		if !ok {
+			switch t := ext.(type) {
+			case []string:
+				gpe = t
+			}
 		}
-	}
 	*/
 	extraData["GoPathExtra"] = append(gpe, GoPathExtraDefault)
 	return extraData
@@ -58,7 +58,7 @@ type TemplateData struct {
 	EntryDate      string
 	ChangelogEntry string
 	Checksums      *deb.Checksums
-	ExtraData map[string]interface{}
+	ExtraData      map[string]interface{}
 }
 
 func TemplateFileOrString(templateFile string, templateDefault string, vars interface{}) ([]byte, error) {

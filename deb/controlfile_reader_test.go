@@ -1,19 +1,18 @@
-
-
 package deb_test
 
 import (
 	"github.com/debber/debber-v0.3/deb"
-	"path/filepath"
 	"os"
+	"path/filepath"
 	"testing"
 )
-var testControlFiles = []string{ 
-		filepath.Join("testdata", "butaca.control"),
-		filepath.Join("testdata", "gitso.control"),
-		filepath.Join("testdata", "kompas-plugins.control"),
-		filepath.Join("testdata", "xkcdMeegoReader.control"),
-	}
+
+var testControlFiles = []string{
+	filepath.Join("testdata", "butaca.control"),
+	filepath.Join("testdata", "gitso.control"),
+	filepath.Join("testdata", "kompas-plugins.control"),
+	filepath.Join("testdata", "xkcdMeegoReader.control"),
+}
 
 func TestParseControlFile(t *testing.T) {
 	tcf2 := []string{}

@@ -127,13 +127,13 @@ func ValidatePackage(pkg *Package) error {
 			return err
 		}
 	}
-/* Version is not required in a package (the source debian/control doesn't contain one)
+	/* Version is not required in a package (the source debian/control doesn't contain one)
 	err = ValidateVersion(pkg.Get(VersionFName))
 	if err != nil {
 		return err
 	}
 
-*/
+	*/
 	return nil
 }
 

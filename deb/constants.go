@@ -8,44 +8,44 @@ const (
 	//DebianBinaryVersionDefault is the current version as specified in .deb archives (filename debian-binary)
 	DebianBinaryVersionDefault = "2.0"
 	//DebianCompatDefault - compatibility. Current version
-	DebianCompatDefault        = "9"
+	DebianCompatDefault = "9"
 	//FormatDefault - the format specified in the dsc file (3.0 quilt uses a .debian.gz file rather than a .diff.gz file)
-	FormatDefault              = "3.0 (quilt)"
+	FormatDefault = "3.0 (quilt)"
 	// StatusDefault is unreleased by default. Change this once you're happy with it.
-	StatusDefault              = "unreleased"
+	StatusDefault = "unreleased"
 
 	//SectionDefault - devel seems to be the most common value
-	SectionDefault          = "devel"
+	SectionDefault = "devel"
 	//PriorityDefault - 'extra' means 'low priority'
-	PriorityDefault         = "extra"
+	PriorityDefault = "extra"
 	//DependsDefault - No dependencies by default
-	DependsDefault          = ""
+	DependsDefault = ""
 	//BuildDependsDefault - debhelper recommended for any package
-	BuildDependsDefault     = "debhelper (>= 9.1.0)"
+	BuildDependsDefault = "debhelper (>= 9.1.0)"
 	//BuildDependsGoDefault - golang required
-	BuildDependsGoDefault     = "debhelper (>= 9.1.0), golang-go"
+	BuildDependsGoDefault = "debhelper (>= 9.1.0), golang-go"
 
 	//StandardsVersionDefault - standards version is specified in the control file
 	StandardsVersionDefault = "3.9.4"
 
 	//ArchitectureDefault -'any' is the default architecture for source packages - not for binary debs
-	ArchitectureDefault     = "any"
+	ArchitectureDefault = "any"
 
 	//TemplateDirDefault - the place where control file templates are kept
-	TemplateDirDefault  = "templates"
+	TemplateDirDefault = "templates"
 	//ResourcesDirDefault - the place where portable files are stored.
 	ResourcesDirDefault = "resources"
 	//WorkingDirDefault - the directory for build process.
-	WorkingDirDefault   = "."
+	WorkingDirDefault = "."
 
 	//ExeDirDefault - the default directory for exes within the data archive
-	ExeDirDefault                   = "/usr/bin" 
+	ExeDirDefault                   = "/usr/bin"
 	BinaryDataArchiveNameDefault    = "data.tar.gz"
 	BinaryControlArchiveNameDefault = "control.tar.gz"
 
 	//OutDirDefault is the default output directory for temp or dist files
-	outDirDefault  = "target"
-	DebianDir      = "debian"
+	outDirDefault = "target"
+	DebianDir     = "debian"
 )
 
 const (
@@ -89,7 +89,7 @@ var (
 
 	MaintainerScripts = []string{"postinst", "postrm", "prerm", "preinst"}
 
-	//SourceFields are the fields applicable to Source packages 
+	//SourceFields are the fields applicable to Source packages
 	//
 	// see http://manpages.ubuntu.com/manpages/precise/man5/deb-src-control.5.html://manpages.ubuntu.com/manpages/precise/man5/deb-src-control.5.html
 	SourceFields = []string{

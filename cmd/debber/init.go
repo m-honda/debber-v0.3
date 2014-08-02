@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"text/template"
 	"strings"
+	"text/template"
 )
 
 var cmdName = "debber"
@@ -37,7 +37,7 @@ func initDebber(input []string) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	if pkgName == "" || maintainerName == "" || maintainerEmail == "" || shortDescription == "" || longDescription == ""  {
+	if pkgName == "" || maintainerName == "" || maintainerEmail == "" || shortDescription == "" || longDescription == "" {
 		log.Fatalf("Required fields: --name, --maintainer, --maintainer-email, --desc, --long-desc")
 	}
 	//handle spaces in longDescription. TODO: utility function

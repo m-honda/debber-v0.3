@@ -9,15 +9,6 @@ func InitFlagsBasic(name string) *flag.FlagSet {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	return fs
 }
-/*
-type Params struct {
-	Package      string
-	Version      string
-	Maintainer   string
-	Description  string
-	Architecture string
-}
-*/
 
 func InitBuildFlags(name string, build *debgen.BuildParams) *flag.FlagSet {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
@@ -29,16 +20,4 @@ func InitBuildFlags(name string, build *debgen.BuildParams) *flag.FlagSet {
 	fs.StringVar(&build.DebianDir, "debian-dir", build.DebianDir, "'debian' dir (contains control file, changelog, postinst, etc)")
 	return fs
 }
-/*
-func InitFlags(name string, pkg *deb.Control, build *debgen.BuildParams) (*flag.FlagSet, *Params) {
-	fs := InitBuildFlags(name, build)
-
-	pkgv := new(Params)
-	fs.StringVar(&pkgv.Package, "package", "", "Package name")
-	fs.StringVar(&pkgv.Version, "version", "", "Package version")
-	fs.StringVar(&pkgv.Maintainer, "maintainer", "", "Package maintainer")
-	fs.StringVar(&pkgv.Description, "description", "", "Description")
-	return fs, pkgv
-}
-*/
 

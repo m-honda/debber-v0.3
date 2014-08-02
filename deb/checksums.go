@@ -65,7 +65,10 @@ func checksums(path, name string) (*Checksum, *Checksum, *Checksum, error) {
 	}
 	checksumMd5 := Checksum{hex.EncodeToString(hashMd5.Sum(nil)), size, name}
 
-	f.Seek(int64(0), 0)
+	_, err = f.Seek(int64(0), 0)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 	hash256 := sha256.New()
 	size, err = io.Copy(hash256, f)
 	if err != nil {
@@ -73,7 +76,10 @@ func checksums(path, name string) (*Checksum, *Checksum, *Checksum, error) {
 	}
 	checksumSha256 := Checksum{hex.EncodeToString(hash256.Sum(nil)), size, name}
 
-	f.Seek(int64(0), 0)
+	_, err = f.Seek(int64(0), 0)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 	hash1 := sha1.New()
 	size, err = io.Copy(hash1, f)
 	if err != nil {
