@@ -133,11 +133,11 @@ func Copy(ctrl *Control) *Control {
 	return nctrl
 }
 
+//BinaryParas returns all paragraphs containing a 'Package' field
 func (ctrl *Control) BinaryParas() []*Package {
 	paras := []*Package{}
-	nkey := PackageFName
 	for _, para := range *ctrl {
-		v := para.Get(nkey)
+		v := para.Get(PackageFName)
 		if v != "" {
 			paras = append(paras, para)
 		}
@@ -145,11 +145,11 @@ func (ctrl *Control) BinaryParas() []*Package {
 	return paras
 }
 
+//BinaryParas returns all paragraphs containing a 'Source' field
 func (ctrl *Control) SourceParas() []*Package {
 	paras := []*Package{}
-	nkey := SourceFName
 	for _, para := range *ctrl {
-		v := para.Get(nkey)
+		v := para.Get(SourceFName)
 		if v != "" {
 			paras = append(paras, para)
 		}

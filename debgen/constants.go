@@ -85,8 +85,8 @@ Architecture: {{.Deb.Architecture}}
 Section: {{.Get "Section"}}
 Priority: {{.Get "Priority"}}
 Maintainer: {{.Get "Maintainer"}}
-Build-Depends: {{.Get "BuildDepends"}}
-Standards-Version: {{.Get "StandardsVersion"}}`
+Build-Depends: {{.Get "Build-Depends"}}
+Standards-Version: {{.Get "Standards-Version"}}`
 
 	TemplateSnippetControlBinPackage = `Package: {{.Get "Package"}}
 Architecture: {{.Get "Architecture"}}
@@ -115,8 +115,8 @@ Binary: {{.Package.Get "Package"}}
 Architecture: {{.Package.Get "Architecture"}}
 Version: {{.Package.Get "Version"}}
 Maintainer: {{.Package.Get "Maintainer"}}
-Standards-Version: {{.Package.Get "StandardsVersion"}}
-Build-Depends: {{.Package.Get "BuildDepends"}}
+Standards-Version: {{.Package.Get "Standards-Version"}}
+Build-Depends: {{.Package.Get "Build-Depends"}}
 Priority: {{.Package.Get "Priority"}}
 Section: {{.Package.Get "Section"}}
 Checksums-Sha1:{{range .Checksums.ChecksumsSha1}}

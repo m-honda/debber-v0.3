@@ -12,34 +12,7 @@ import (
 )
 
 var cmdName = "debber"
-/*
-func ParseFlags(pkg *deb.Control, params *Params, fs *flag.FlagSet) error {
-	err := fs.Parse(os.Args[2:])
-	if err != nil {
-		return err
-	}
-	pkg.Paragraphs[0].Set(deb.SourceFName, params.Package)
-	pkg.Paragraphs[0].Set(deb.VersionFName, params.Version)
-	pkg.Paragraphs[0].Set(deb.MaintainerFName, params.Maintainer)
-	pkg.Paragraphs[0].Set(deb.DescriptionFName, params.Description)
-	pkg.Paragraphs[0].Set(deb.ArchitectureFName, params.Architecture)
-	if len(pkg.Paragraphs) < 2 {
-		pkg.Paragraphs = append(pkg.Paragraphs, deb.NewPackage())
-	}
-	pkg.Paragraphs[1].Set(deb.PackageFName, params.Package)
-	if err == nil {
-		//validation ...
-		err = deb.ValidatePackage(pkg.Paragraphs[0])
-		if err != nil {
-			println("")
-			fmt.Fprintf(os.Stderr, "Usage:\n")
-			fs.PrintDefaults()
-			println("")
-		}
-	}
-	return err
-}
-*/
+
 func initDebber(input []string) {
 	//set to nothing
 	ctrl := deb.NewControlEmpty()
@@ -96,6 +69,8 @@ func initDebber(input []string) {
 	deb.SetDefaults(ctrl)
 	if strings.HasPrefix(flavour, "go:") {
 		debgen.ApplyGoDefaults(ctrl)
+	} else {
+		debgen.ApplyBasicDefaults(ctrl)
 	}
 	if err == nil {
 		//validation ...

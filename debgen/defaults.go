@@ -21,9 +21,23 @@ import (
 )
 
 // Applies go-specific information to packages.
-// Includes dependencies, Go Path information.
+// i.e. dependencies
 func ApplyGoDefaults(ctrl *deb.Control) {
-	(*ctrl)[0].Set(deb.BuildDependsFName, deb.BuildDependsDefault)
-	(*ctrl)[0].Set(deb.DependsFName, deb.DependsDefault)
+	for _, pkg := range ctrl.SourceParas() {
+		pkg.Set(deb.BuildDependsFName, deb.BuildDependsGoDefault)
+	}
+	for _, pkg := range ctrl.BinaryParas() {
+		pkg.Set(deb.DependsFName, deb.DependsDefault)
+	}
+}
 
+// Applies non-go-specific information to packages.
+// i.e. dependencies
+func ApplyBasicDefaults(ctrl *deb.Control) {
+	for _, pkg := range ctrl.SourceParas() {
+		pkg.Set(deb.BuildDependsFName, deb.BuildDependsDefault)
+	}
+	for _, pkg := range ctrl.BinaryParas() {
+		pkg.Set(deb.DependsFName, deb.DependsDefault)
+	}
 }

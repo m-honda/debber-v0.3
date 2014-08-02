@@ -72,7 +72,7 @@ const (
 	BuiltUsingFName        = "Built-Using"
 
 	PriorityFName         = "Priority"
-	StandardsVersionFName = "StandardsVersion"
+	StandardsVersionFName = "Standards-Version"
 	SectionFName          = "Section"
 	FormatFName           = "Format"
 	StatusFName           = "Status"

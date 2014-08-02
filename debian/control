@@ -1,19 +1,17 @@
-Source: dbr
+Source: debber
 Section: devel
 Priority: extra
-Maintainer: me <me@a.b>
-Build-Depends: debhelper, golang-go, argo
+Maintainer: Am Laher <laher@github>
+Build-Depends: debhelper (>= 9.1.0), golang-go
 Standards-Version: 3.9.4
 
-Package: dbr
+Package: debber
 Architecture: any
-Description: blah.
- blah..
+Description: tools for making debs
+ debber makes and reads deb files
 
-
-Package: dbr-dev
+Package: debber-dev
 Architecture: all
-Description: blah - development package
- blah...
-
+Description: tools for making debs - development package
+ debber makes and reads deb files
 
