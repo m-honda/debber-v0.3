@@ -1,11 +1,19 @@
-Source: debber
+Source: dbr
 Section: devel
 Priority: extra
-Distribution: unstable
-Maintainer: am <am@laher.x.x>
-Build-Depends: debhelper (>= 9.1.0), golang-go
+Maintainer: me <me@a.b>
+Build-Depends: debhelper, golang-go, argo
 Standards-Version: 3.9.4
 
-Package: debber
+Package: dbr
 Architecture: any
-Description: Hello
+Description: blah.
+ blah..
+
+
+Package: dbr-dev
+Architecture: all
+Description: blah - development package
+ blah...
+
+

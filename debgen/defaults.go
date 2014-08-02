@@ -22,20 +22,8 @@ import (
 
 // Applies go-specific information to packages.
 // Includes dependencies, Go Path information.
-func ApplyGoDefaults(pkg *deb.Control) {
-	if pkg.ExtraData == nil {
-		pkg.ExtraData = map[string]interface{}{}
-	}
-	gpe := []string{}
-	ext, ok := pkg.ExtraData["GoPathExtra"]
-	if !ok {
-		switch t := ext.(type) {
-		case []string:
-			gpe = t
-		}
-	}
-	pkg.ExtraData["GoPathExtra"] = append(gpe, GoPathExtraDefault)
-	pkg.Paragraphs[0].Set(deb.BuildDependsFName, deb.BuildDependsDefault)
-	pkg.Paragraphs[0].Set(deb.DependsFName, deb.DependsDefault)
+func ApplyGoDefaults(ctrl *deb.Control) {
+	(*ctrl)[0].Set(deb.BuildDependsFName, deb.BuildDependsDefault)
+	(*ctrl)[0].Set(deb.DependsFName, deb.DependsDefault)
 
 }

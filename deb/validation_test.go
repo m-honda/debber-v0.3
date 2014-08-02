@@ -19,6 +19,7 @@ package deb_test
 import (
 	"github.com/debber/debber-v0.3/deb"
 	"log"
+	"os"
 	"testing"
 )
 
@@ -48,5 +49,28 @@ func TestValidateVersion(t *testing.T) {
 		if err == nil {
 			t.Fatalf("Bad Version not detected for %v", v)
 		}
+	}
+}
+
+func TestValidateControlFiles(t *testing.T) {
+	for _, filename := range testControlFiles {
+		t.Logf("Package contents of %v:", filename)
+		file, err := os.Open(filename)
+		if err != nil {
+			t.Errorf("cant open file", err)
+		}
+		cfr := deb.NewControlFileReader(file)
+		ctrl, err := cfr.Parse()
+		if err != nil {
+			t.Errorf("cant parse file", err)
+		}
+		for _, pkg := range *ctrl {
+			err = deb.ValidatePackage(pkg)
+			if err != nil {
+				t.Errorf("Invalid package: %v.", err)
+			}
+			t.Logf("Package contents: %+v", pkg)
+		}
+		t.Logf("Package contents: %+v", (*ctrl)[0])
 	}
 }

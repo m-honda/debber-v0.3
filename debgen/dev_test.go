@@ -7,9 +7,12 @@ import (
 )
 
 func Example_genDevPackage() {
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	ctrl := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
 
-	ddpkg := deb.NewDevPackage(pkg)
+	spara := ctrl.GetParasByField(deb.SourceFName, "testpkg")
+	bpara := ctrl.GetParasByField(deb.PackageFName, "testpkg-dev")
+	nctrl := &deb.Control{spara[0], bpara[0]}
+
 	build := debgen.NewBuildParams()
 	build.IsRmtemp = false
 	build.Init()
@@ -19,9 +22,17 @@ func Example_genDevPackage() {
 		log.Fatalf("Error building -dev: %v", err)
 	}
 
-	err = debgen.GenDevArtifact(ddpkg, build, mappedFiles)
+	artifacts, err := deb.NewWriters(nctrl)
 	if err != nil {
 		log.Fatalf("Error building -dev: %v", err)
+	}
+	for _, artifact := range artifacts {
+		dgen := debgen.NewDebGenerator(artifact, build)
+		dgen.OrigFiles = mappedFiles
+		err = dgen.GenerateAllDefault()
+		if err != nil {
+			log.Fatalf("Error building -dev: %v", err)
+		}
 	}
 
 	// Output:

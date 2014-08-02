@@ -2,17 +2,14 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
-	"os"
 )
 
 func InitFlagsBasic(name string) *flag.FlagSet {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	return fs
 }
-
+/*
 type Params struct {
 	Package      string
 	Version      string
@@ -20,8 +17,9 @@ type Params struct {
 	Description  string
 	Architecture string
 }
+*/
 
-func InitBuildFlags(name string, build *debgen.BuildParams) (*flag.FlagSet) {
+func InitBuildFlags(name string, build *debgen.BuildParams) *flag.FlagSet {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.BoolVar(&build.IsRmtemp, "rmtemp", false, "Remove 'temp' dirs")
 	fs.BoolVar(&build.IsVerbose, "verbose", false, "Show log messages")
@@ -31,7 +29,7 @@ func InitBuildFlags(name string, build *debgen.BuildParams) (*flag.FlagSet) {
 	fs.StringVar(&build.DebianDir, "debian-dir", build.DebianDir, "'debian' dir (contains control file, changelog, postinst, etc)")
 	return fs
 }
-
+/*
 func InitFlags(name string, pkg *deb.Control, build *debgen.BuildParams) (*flag.FlagSet, *Params) {
 	fs := InitBuildFlags(name, build)
 
@@ -42,30 +40,5 @@ func InitFlags(name string, pkg *deb.Control, build *debgen.BuildParams) (*flag.
 	fs.StringVar(&pkgv.Description, "description", "", "Description")
 	return fs, pkgv
 }
+*/
 
-func ParseFlags(pkg *deb.Control, params *Params, fs *flag.FlagSet) error {
-	err := fs.Parse(os.Args[2:])
-	if err != nil {
-		return err
-	}
-	pkg.Paragraphs[0].Set(deb.SourceFName, params.Package)
-	pkg.Paragraphs[0].Set(deb.VersionFName, params.Version)
-	pkg.Paragraphs[0].Set(deb.MaintainerFName, params.Maintainer)
-	pkg.Paragraphs[0].Set(deb.DescriptionFName, params.Description)
-	pkg.Paragraphs[0].Set(deb.ArchitectureFName, params.Architecture)
-	if len(pkg.Paragraphs) < 2 {
-		pkg.Paragraphs = append(pkg.Paragraphs, deb.NewPackage())
-	}
-	pkg.Paragraphs[1].Set(deb.PackageFName, params.Package)
-	if err == nil {
-		//validation ...
-		err = deb.ValidatePackage(pkg.Paragraphs[0])
-		if err != nil {
-			println("")
-			fmt.Fprintf(os.Stderr, "Usage:\n")
-			fs.PrintDefaults()
-			println("")
-		}
-	}
-	return err
-}

@@ -6,23 +6,37 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
+type debGenOpts struct {
+	bin386Glob string
+	binArmhfGlob string
+	binAmd64Glob string
+	binAnyGlob string
+	resourcesGlob string
+	sourcesGlob, sourcesDest string
+	version string
+	archFilter string
+}
 
 func debGen(input []string) {
 	build := debgen.NewBuildParams()
+	opts := debGenOpts{}
 	fs := InitBuildFlags(cmdName+" "+TaskGenDeb, build)
-	var binDir string
-	var resourcesDir string
-	var arch, version string
-	fs.StringVar(&binDir, "binaries", "", "directory containing binaries for each architecture. Directory names should end with the architecture")
-	fs.StringVar(&arch, "arch", "any", "Architectures [any,386,armhf,amd64,all]")
-	fs.StringVar(&resourcesDir, "resources", "", "directory containing resources for this platform")
-	fs.StringVar(&version, "version", "", "Package version")
+	fs.StringVar(&opts.sourcesGlob, "sources", "**.go", "Glob pattern for sources.")
+	fs.StringVar(&opts.bin386Glob, "bin-386", "*386/*", "Glob pattern for binaries for the 386 platform.")
+	fs.StringVar(&opts.binArmhfGlob, "bin-armhf", "*armhf/*", "Glob pattern for binaries for the armhf platform.")
+	fs.StringVar(&opts.binAmd64Glob, "bin-amd64", "*amd64/*", "Glob pattern for binaries for the amd64 platform.")
+	fs.StringVar(&opts.binAnyGlob, "bin-any", "*any/*", "Glob pattern for binaries for *any* platform.")
+	fs.StringVar(&opts.sourcesDest, "sources-dest", debgen.DevGoPathDefault + "/src", "directory containing sources.")
+	fs.StringVar(&opts.archFilter, "arch-filter", "", "Filter by Architecture. Comma-separated [386,armhf,amd64,all]") //TODO filter outputs by arch?
+	fs.StringVar(&opts.resourcesGlob, "resources", "", "directory containing resources for this platform")
+	fs.StringVar(&opts.version, "version", "", "Package version")
 	err := fs.Parse(os.Args[2:])
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	if version == "" {
+	if opts.version == "" {
 		log.Fatalf("Error: --version is a required flag")
 	}
 	fi, err := os.Open(filepath.Join(build.DebianDir, "control"))
@@ -30,20 +44,7 @@ func debGen(input []string) {
 		log.Fatalf("%v", err)
 	}
 	cfr := deb.NewControlFileReader(fi)
-	pkg, err := cfr.Parse()
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-
-	debpara := deb.CopyPara(pkg.Paragraphs[1])
-
-	debpkg := deb.NewEmptyControl()
-	debpkg.Paragraphs = append(debpkg.Paragraphs, debpara)
-	debpkg.Paragraphs[0].Set(deb.VersionFName, version)
-	debpkg.Paragraphs[0].Set(deb.ArchitectureFName, arch)
-	debpkg.ExtraData = pkg.ExtraData
-
-
+	ctrl, err := cfr.Parse()
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -51,45 +52,95 @@ func debGen(input []string) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-
-	//log.Printf("Resources: %v", build.Resources)
-	// TODO determine this platform
-	//err = bpkg.Build(build, debgen.GenBinaryArtifact)
-	artifacts, err := deb.NewWriters(debpkg)
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	for arch, artifact := range artifacts {
-		dgen := debgen.NewDebGenerator(artifact, build)
-		err = filepath.Walk(build.ResourcesDir, func(path string, info os.FileInfo, err2 error) error {
-			if info != nil && !info.IsDir() {
-				rel, err := filepath.Rel(resourcesDir, path)
-				if err == nil {
-					dgen.OrigFiles[rel] = path
+	sourcePara := ctrl.SourceParas()[0]
+	log.Printf("sourcePara: %+v", sourcePara)
+	for _, binPara := range ctrl.BinaryParas() {
+//TODO check -dev package here ...
+		debpara := deb.CopyPara(binPara)
+		debpara.Set(deb.VersionFName, opts.version)
+		debpara.Set(deb.SectionFName, sourcePara.Get(deb.SectionFName))
+		debpara.Set(deb.MaintainerFName, sourcePara.Get(deb.MaintainerFName))
+		debpara.Set(deb.PriorityFName, sourcePara.Get(deb.PriorityFName))
+		log.Printf("debPara: %+v", debpara)
+		sources := []string{}
+		//source package. TODO: find a better way to identify a source package.
+		if strings.HasSuffix(binPara.Get(deb.PackageFName), "-dev") {
+			if opts.sourcesGlob != "" {
+				sources, err = filepath.Glob(opts.sourcesGlob)
+				if err != nil {
+					log.Fatalf("%v", err)
 				}
-				return err
+				log.Printf("sources matching glob: %+v", sources)
 			}
-			return nil
-		})
+		
+		} else {
+			// bin dirs
+		}
+		//log.Printf("Resources: %v", build.Resources)
+		// TODO determine this platform
+		//err = bpkg.Build(build, debgen.GenBinaryArtifact)
+		artifacts, err := deb.NewWriters(&deb.Control{debpara})
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
-
-		archBinDir := filepath.Join(binDir, string(arch))
-
-		err = filepath.Walk(archBinDir, func(path string, info os.FileInfo, err2 error) error {
-			if info != nil && !info.IsDir() {
-				rel, err := filepath.Rel(binDir, path)
-				if err == nil {
-					dgen.OrigFiles[rel] = path
-				}
-				return err
+		for arch, artifact := range artifacts {
+			dgen := debgen.NewDebGenerator(artifact, build)
+			for _, source := range sources {
+				//NOTE: this should not use filepath.Join because it should always use forward-slash
+				dgen.OrigFiles[opts.sourcesDest + "/" + source] = source
 			}
-			return nil
-		})
-		err = dgen.GenerateAllDefault()
-		if err != nil {
-			log.Fatalf("Error building for '%s': %v", arch, err)
+			// add resources ...
+			err = filepath.Walk(build.ResourcesDir, func(path string, info os.FileInfo, err2 error) error {
+				if info != nil && !info.IsDir() {
+					rel, err := filepath.Rel(build.ResourcesDir, path)
+					if err == nil {
+						dgen.OrigFiles[rel] = path
+					}
+					return err
+				}
+				return nil
+			})
+			if err != nil {
+				log.Fatalf("%v", err)
+			}
+			globs := []string{}
+			// add binaries ...
+			switch arch {
+			case "386":
+				globs = []string{opts.bin386Glob, opts.binAnyGlob}
+			case "amd64":
+				globs = []string{opts.binAmd64Glob, opts.binAnyGlob}
+			case "armhf":
+				globs = []string{opts.binArmhfGlob, opts.binAnyGlob}
+			}
+			for _, glob := range globs {
+				bins, err := filepath.Glob(glob)
+				if err != nil {
+					log.Fatalf("%v", err)
+				}
+				log.Printf("Binaries matching glob for '%s': %+v", arch, bins)
+				for _, bin := range bins {
+					dgen.OrigFiles[deb.ExeDirDefault + "/" + bin] = bin
+				}
+			}
+/*
+			archBinDir := filepath.Join(binDir, string(arch))
+			err = filepath.Walk(archBinDir, func(path string, info os.FileInfo, err2 error) error {
+				if info != nil && !info.IsDir() {
+					rel, err := filepath.Rel(binDir, path)
+					if err == nil {
+						dgen.OrigFiles[rel] = path
+					}
+					return err
+				}
+				return nil
+			})
+*/			
+			
+			err = dgen.GenerateAllDefault()
+			if err != nil {
+				log.Fatalf("Error building for '%s': %v", arch, err)
+			}
 		}
 	}
 }

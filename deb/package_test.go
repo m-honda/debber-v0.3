@@ -22,14 +22,14 @@ import (
 )
 
 func TestCopy(t *testing.T) {
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
-	npkg := deb.Copy(pkg)
-	if pkg == npkg {
+	ctrl := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
+	nctrl := deb.Copy(ctrl)
+	if ctrl == nctrl {
 		t.Errorf("Copy returned the same reference - not a copy")
 	}
-	if pkg.Get(deb.PackageFName) != npkg.Get(deb.PackageFName) {
+	if ctrl.Get(deb.PackageFName) != nctrl.Get(deb.PackageFName) {
 		t.Errorf("Copy didn't copy the same Name value")
 	}
-	t.Logf("Original: %+v", pkg)
-	t.Logf("Copy:     %+v", npkg)
+	t.Logf("Original: %+v", ctrl)
+	t.Logf("Copy:     %+v", nctrl)
 }

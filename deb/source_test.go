@@ -10,7 +10,7 @@ import (
 )
 
 func Example_buildSourceDeb() {
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	pkg := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
 	spkg := deb.NewSourcePackage(pkg)
 	err := buildOrigArchive(spkg) // it's up to you how to build this
 	if err != nil {
@@ -27,7 +27,7 @@ func Example_buildSourceDeb() {
 }
 
 func Test_buildSourceDeb(t *testing.T) {
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	pkg := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
 	spkg := deb.NewSourcePackage(pkg)
 	err := buildOrigArchive(spkg) // it's up to you how to build this
 	if err != nil {

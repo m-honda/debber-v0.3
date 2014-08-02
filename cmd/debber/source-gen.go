@@ -4,15 +4,16 @@ import (
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
 	"log"
+	"os"
 )
 
-func genSource(input []string) {
+func sourceGen(input []string) {
 	//set to empty strings because they're being overridden
-	pkg := deb.NewEmptyControl()
+	pkg := deb.NewControlEmpty()
 	build := debgen.NewBuildParams()
 	debgen.ApplyGoDefaults(pkg)
-	fs, params := InitFlags(cmdName, pkg, build)
-//	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	fs := InitBuildFlags(cmdName+" "+TaskGenSource, build)
+	//	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
 
 	var sourceDir string
 	var glob string
@@ -20,7 +21,7 @@ func genSource(input []string) {
 	fs.StringVar(&sourceDir, "sources", ".", "source dir")
 	fs.StringVar(&glob, "sources-glob", debgen.GlobGoSources, "Glob for inclusion of sources")
 	fs.StringVar(&sourcesRelativeTo, "sources-relative-to", "", "Sources relative to (it will assume relevant gopath element, unless you specify this)")
-	err := ParseFlags(pkg, params, fs)
+	err := fs.Parse(os.Args[2:])
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

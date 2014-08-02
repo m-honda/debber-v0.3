@@ -23,25 +23,24 @@ import (
 // Package is the base unit for this library.
 // A *Package contains metadata.
 type Package struct {
-	controlData           map[string]string // This map should contain all keys/values, with keys using the standard camel case
-	controlDataCaseLookup map[string]string // Case sensitive lookups. TODO
+	controlData map[string]string // This map should contain all keys/values, with keys using the standard camel case
+	//controlDataCaseLookup map[string]string // Case sensitive lookups. TODO
 }
 
-
 func NewPackage() *Package {
-	para := &Package{controlData: map[string]string{}, controlDataCaseLookup: map[string]string{}}
+	para := &Package{controlData: map[string]string{}}
 	return para
 }
 
 // Set sets a control field by name
 func (pkg *Package) Set(key, value string) error {
-	nkey := normaliseKey(key)
+	nkey := NormaliseFieldKey(key)
 	//existingVal, exists := pkg.controlData[nkey]
 	pkg.controlData[nkey] = value
 	return nil
 }
 
-func normaliseKey(input string) string {
+func NormaliseFieldKey(input string) string {
 	isUcase := true
 	newString := ""
 	for _, ch := range input {
@@ -61,13 +60,13 @@ func normaliseKey(input string) string {
 
 // GetExtended gets a control field by name, returning key, value & 'exists'
 func (pkg *Package) GetExtended(key string) (string, string, bool) {
-	nkey := normaliseKey(key)
+	nkey := NormaliseFieldKey(key)
 	val, exists := pkg.controlData[nkey]
 	return nkey, val, exists
 }
 
 func (pkg *Package) Get(key string) string {
-	nkey := normaliseKey(key)
+	nkey := NormaliseFieldKey(key)
 	val, _ := pkg.controlData[nkey]
 	return val
 }
@@ -77,12 +76,10 @@ func CopyPara(pkg *Package) *Package {
 	for k, v := range pkg.controlData {
 		npkg.controlData[k] = v
 	}
-	for k, v := range pkg.controlDataCaseLookup {
-		npkg.controlDataCaseLookup[k] = v
-	}
 	return npkg
 }
 
+/*
 //merge 2 packages for the purposes of generating a binary package
 func Merge(inpkg *Package, in2pkg *Package, ignoreKeys []string) *Package {
 	npkg := CopyPara(inpkg)

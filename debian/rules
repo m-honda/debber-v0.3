@@ -6,7 +6,7 @@
 
 export GOPATH=$(CURDIR)::/usr/share/gocode
 
-PKGDIR=debian/a2
+PKGDIR=debian/dbr
 
 %:
 	dh $@

@@ -38,14 +38,14 @@ func changelogAdd(args []string) {
 		log.Fatalf("file 'control' not found in debian-dir %s: %v", build.DebianDir, err)
 	}
 	cfr := deb.NewControlFileReader(fi)
-	pkg, err := cfr.Parse()
+	ctrl, err := cfr.Parse()
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	pkg.Paragraphs[0].Set("Version", version)
-	pkg.Paragraphs[0].Set("Distribution", distribution)
+	(*ctrl)[0].Set("Version", version)
+	(*ctrl)[0].Set("Distribution", distribution)
 	filename := filepath.Join(build.DebianDir, "changelog")
-	templateVars := debgen.NewTemplateData(pkg)
+	templateVars := debgen.NewTemplateData(ctrl)
 	templateVars.ChangelogEntry = entry
 	err = os.MkdirAll(filepath.Join(build.ResourcesDir, "debian"), 0777)
 	if err != nil {
@@ -95,4 +95,3 @@ func changelogAdd(args []string) {
 	}
 
 }
-

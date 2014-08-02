@@ -16,18 +16,12 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 )
 
-// change this to true for generating an archive on the Filesystem
-var (
-	filename = filepath.Join("_test", "tmp.tar.gz")
-	isFs     = true
-)
 
 func Example() {
 	// Create a buffer to write our archive to.
-	wtr := writer(isFs)
+	wtr := new(bytes.Buffer)
 
 	// Create a new ar archive.
 	tgzw := targz.NewWriter(wtr)
@@ -56,7 +50,9 @@ func Example() {
 	if err := tgzw.Close(); err != nil {
 		log.Fatalln(err)
 	}
-	rdr := reader(isFs, wtr)
+	// Open the ar archive for reading.
+	rdr := bytes.NewReader(wtr.Bytes())
+
 	tgzr, err := targz.NewReader(rdr)
 	if err != nil {
 		log.Fatalln(err)
@@ -92,35 +88,3 @@ func Example() {
 	// Get animal handling licence.
 }
 
-func reader(isFs bool, w io.Writer) io.Reader {
-	if isFs {
-		fi := w.(*os.File)
-		err := fi.Close()
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		r, err := os.Open(filename)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		return r
-	}
-	buf := w.(*bytes.Buffer)
-	// Open the ar archive for reading.
-	r := bytes.NewReader(buf.Bytes())
-	return r
-
-}
-
-func writer(isFs bool) io.Writer {
-	if isFs {
-		fi, err := os.Create(filename)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		return fi
-	}
-	return new(bytes.Buffer)
-
-}

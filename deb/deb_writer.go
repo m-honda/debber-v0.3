@@ -37,22 +37,22 @@ type Writer struct {
 
 // NewWriters gets and returns an artifact for each architecture.
 // Returns an error if the package's architecture is un-parseable
-func NewWriters(pkg *Control) (map[Architecture]*Writer, error) {
-	arches, err := pkg.GetArches()
+func NewWriters(ctrl *Control) (map[Architecture]*Writer, error) {
+	arches, err := ctrl.GetArches()
 	if err != nil {
 		return nil, err
 	}
 	ret := map[Architecture]*Writer{}
 	for _, arch := range arches {
-		archArtifact := NewWriter(pkg, arch)
+		archArtifact := NewWriter(ctrl, arch)
 		ret[arch] = archArtifact
 	}
 	return ret, nil
 }
 
 // Factory of platform build information
-func NewWriter(pkg *Control, architecture Architecture) *Writer {
-	bdeb := &Writer{Control: pkg, Architecture: architecture}
+func NewWriter(ctrl *Control, architecture Architecture) *Writer {
+	bdeb := &Writer{Control: ctrl, Architecture: architecture}
 	bdeb.SetDefaults()
 	return bdeb
 }

@@ -4,22 +4,22 @@ import (
 	"log"
 	"os"
 )
+
 const (
-	TaskInit = "init"
-	TaskChangelogAdd = "changelog:add"
-	TaskGenDeb = "deb:gen"
-	TaskDebControl = "deb:control"
-	TaskDebContents = "deb:contents"
+	TaskInit              = "init"
+	TaskChangelogAdd      = "changelog:add"
+	TaskGenDeb            = "deb:gen"
+	TaskDebControl        = "deb:control"
+	TaskDebContents       = "deb:contents"
 	TaskDebContentsDebian = "deb:contents-debian"
-	TaskGenDev = "dev:gen"
-	TaskGenSource = "source:gen"
+	TaskGenDev            = "dev:gen"
+	TaskGenSource         = "source:gen"
 )
 
 var tasks = []string{
 	TaskInit,
 	TaskChangelogAdd,
 	TaskGenDeb,
-	TaskGenDev,
 	TaskGenSource,
 	TaskDebControl,
 	TaskDebContents,
@@ -30,7 +30,9 @@ func main() {
 	name := "debber"
 	log.SetPrefix("[" + name + "] ")
 	if len(os.Args) < 2 {
-		log.Fatalf("Please specify a task (one of: %v)", tasks)
+		log.Printf("Please specify a task (one of: %v)", tasks)
+		log.Printf("For help on any task, use `debber <task> -h`")
+		os.Exit(1)
 	}
 	task := os.Args[1]
 	args := os.Args[2:]
@@ -41,19 +43,22 @@ func main() {
 		changelogAdd(args)
 	case TaskGenDeb:
 		debGen(args)
-	case TaskGenDev:
-		genDev(args)
 	case TaskGenSource:
-		genSource(args)
+		sourceGen(args)
 	case TaskDebControl:
 		debControl(args)
 	case TaskDebContents:
 		debContents(args)
 	case TaskDebContentsDebian:
 		debContentsDebian(args)
+	case "help", "h", "-help", "--help", "-h":
+		log.Printf("Please specify one of: %v", tasks)
+		log.Printf("For help on any task, use `debber <task> -h`")
 	default:
-		log.Printf("Unrecognised command '%s'", task)
-		log.Fatalf("Please specify one of: %v", tasks)
+		log.Printf("Unrecognised task '%s'", task)
+		log.Printf("Please specify one of: %v", tasks)
+		log.Printf("For help on any task, use `debber <task> -h`")
+		os.Exit(1)
 	}
 
 }

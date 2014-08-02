@@ -18,56 +18,90 @@ package deb
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Control is the base unit for this library.
 // A *Control contains one or more paragraphs
-type Control struct {
-	Paragraphs []*Package
-	ExtraData  map[string]interface{} // Optional for templates
-}
+type Control []*Package
 
 
 // NewEmptyControl returns a package with one empty paragraph and an empty map of ExtraData
-func NewEmptyControl() *Control {
-	pkg := &Control{Paragraphs: []*Package{NewPackage()}, ExtraData: map[string]interface{}{}}
-	return pkg
+func NewControlEmpty() *Control {
+	ctrl := &Control{NewPackage()}
+	return ctrl
 }
 
 // NewControl is a factory for a Control. Name, Version, Maintainer and Description are mandatory.
-func NewControl(name, version, maintainerName, maintainerEmail, shortDescription, longDescription string) *Control {
-	pkg := NewEmptyControl()
-	pkg.Paragraphs[0].Set(SourceFName, name)
-	pkg.Paragraphs[0].Set(VersionFName, version)
-	pkg.Paragraphs[0].Set(MaintainerFName, fmt.Sprintf("%s <%s>", maintainerName, maintainerEmail))
-	pkg.Paragraphs[0].Set(DescriptionFName, fmt.Sprintf("%s\n%s", shortDescription, longDescription))
-	pkg.Paragraphs = append(pkg.Paragraphs, NewPackage())
-	SetDefaults(pkg)
-	return pkg
+func NewControlDefault(name, maintainerName, maintainerEmail, shortDescription, longDescription string, addDevPackage bool) *Control {
+	ctrl := NewControlEmpty()
+	(*ctrl)[0].Set(SourceFName, name)
+	(*ctrl)[0].Set(MaintainerFName, fmt.Sprintf("%s <%s>", maintainerName, maintainerEmail))
+	(*ctrl)[0].Set(DescriptionFName, fmt.Sprintf("%s\n%s", shortDescription, longDescription))
+	//BuildDepends is empty...
+	//add binary package
+	*ctrl = append(*ctrl, NewPackage())
+	(*ctrl)[1].Set(PackageFName, name)
+	(*ctrl)[1].Set(DescriptionFName, fmt.Sprintf("%s\n%s", shortDescription, longDescription))
+	//depends is empty
+	if addDevPackage {
+		*ctrl = append(*ctrl, NewPackage())
+		(*ctrl)[2].Set(PackageFName, name+"-dev")
+		(*ctrl)[2].Set(ArchitectureFName, "all")
+		(*ctrl)[2].Set(DescriptionFName, fmt.Sprintf("%s - development package\n%s", shortDescription, longDescription))
+	}
+	SetDefaults(ctrl)
+	return ctrl
+}
+
+func (ctrl *Control) NewDevPackage() *Package {
+	name := ctrl.Get(PackageFName)
+	desc := ctrl.Get(DescriptionFName)
+	devPara := NewPackage()
+	devPara.Set(PackageFName, name+"-dev")
+	devPara.Set(ArchitectureFName, "all")
+	sp := strings.SplitN(desc, "\n", 2)
+	shortDescription := sp[0]
+	longDescription := ""
+	if len(sp) > 1 {
+		longDescription = sp[1]
+	}
+	devPara.Set(DescriptionFName, fmt.Sprintf("%s - development package\n%s", shortDescription, longDescription))
+	return devPara
 }
 
 // Sets fields which can be initialised appropriately
-func SetDefaults(pkg *Control) {
-	pkg.Paragraphs[0].Set(PriorityFName, PriorityDefault)
-	pkg.Paragraphs[0].Set(StandardsVersionFName, StandardsVersionDefault)
-	pkg.Paragraphs[0].Set(SectionFName, SectionDefault)
-	pkg.Paragraphs[0].Set(FormatFName, FormatDefault)
-	pkg.Paragraphs[0].Set(StatusFName, StatusDefault)
-	//pkg.MappedFiles = map[string]string{}
-	if len(pkg.Paragraphs) > 1 {
-		pkg.Paragraphs[1].Set(ArchitectureFName, "any") //default ...
+// note that Source and Binary packages are detected by the presence of a Source or Package field, respectively.
+func SetDefaults(ctrl *Control) {
+
+	for _, pkg := range *ctrl {
+		if pkg.Get(SourceFName) != "" {
+			pkg.Set(PriorityFName, PriorityDefault)
+			pkg.Set(StandardsVersionFName, StandardsVersionDefault)
+			pkg.Set(SectionFName, SectionDefault)
+			pkg.Set(FormatFName, FormatDefault)
+			pkg.Set(StatusFName, StatusDefault)
+		}
+	}
+	//ctrl.MappedFiles = map[string]string{}
+	for _, pkg := range *ctrl {
+		if pkg.Get(PackageFName) != "" {
+			if pkg.Get(ArchitectureFName) == "" {
+				pkg.Set(ArchitectureFName, "any") //default ...
+			}
+		}
 	}
 }
 
 // GetArches resolves architecture(s) and return as a slice
-func (pkg *Control) GetArches() ([]Architecture, error) {
-	_, arch, exists := pkg.Paragraphs[0].GetExtended(ArchitectureFName)
+func (ctrl *Control) GetArches() ([]Architecture, error) {
+	_, arch, exists := (*ctrl)[0].GetExtended(ArchitectureFName)
 	if exists {
 		arches, err := resolveArches(arch)
 		return arches, err
 	}
-	if len(pkg.Paragraphs) > 1 {
-		_, arch2, exists2 := pkg.Paragraphs[1].GetExtended(ArchitectureFName)
+	if len(*ctrl) > 1 {
+		_, arch2, exists2 := (*ctrl)[1].GetExtended(ArchitectureFName)
 		if exists2 {
 			arches, err := resolveArches(arch2)
 			return arches, err
@@ -78,9 +112,9 @@ func (pkg *Control) GetArches() ([]Architecture, error) {
 }
 
 //Get finds the first occurence of the specified value, checking each paragraph in turn
-func (pkg *Control) Get(key string) string {
-	for _, paragraph := range pkg.Paragraphs {
-		//return pkg.Paragraphs[0].Get(key)
+func (ctrl *Control) Get(key string) string {
+	for _, paragraph := range *ctrl {
+		//return (*ctrl)[0].Get(key)
 		_, val, exists := paragraph.GetExtended(key)
 		if exists {
 			return val
@@ -91,13 +125,46 @@ func (pkg *Control) Get(key string) string {
 }
 
 // Copy all fields
-func Copy(pkg *Control) *Control {
-	npkg := NewEmptyControl()
-	npkg.Paragraphs = []*Package{}
-	for _, para := range pkg.Paragraphs {
-		npkg.Paragraphs = append(npkg.Paragraphs, CopyPara(para))
+func Copy(ctrl *Control) *Control {
+	nctrl := NewControlEmpty()
+	for _, para := range *ctrl {
+		*nctrl = append(*nctrl, CopyPara(para))
 	}
-	return npkg
+	return nctrl
 }
 
+func (ctrl *Control) BinaryParas() []*Package {
+	paras := []*Package{}
+	nkey := PackageFName
+	for _, para := range *ctrl {
+		v := para.Get(nkey)
+		if v != "" {
+			paras = append(paras, para)
+		}
+	}
+	return paras
+}
 
+func (ctrl *Control) SourceParas() []*Package {
+	paras := []*Package{}
+	nkey := SourceFName
+	for _, para := range *ctrl {
+		v := para.Get(nkey)
+		if v != "" {
+			paras = append(paras, para)
+		}
+	}
+	return paras
+}
+
+func (ctrl *Control) GetParasByField(key string, val string) []*Package {
+	paras := []*Package{}
+	nkey := NormaliseFieldKey(key)
+	for _, para := range *ctrl {
+		v := para.Get(nkey)
+		if val == v {
+			paras = append(paras, para)
+		}
+	}
+	return paras
+}

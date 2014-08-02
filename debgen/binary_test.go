@@ -10,13 +10,14 @@ import (
 
 func Example_genBinaryPackage() {
 
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "<a@me.org>", "Dummy package for doing nothing", "testpkg is a dummy package")
-
+	ctrl := deb.NewControlDefault("testpkg", "me", "<a@me.org>", "Dummy package for doing nothing", "testpkg is a dummy package", true)
+	for _, pkg := range ctrl.BinaryParas() {
+		pkg.Set(deb.VersionFName, "0.0.2")
+	}
 	build := debgen.NewBuildParams()
 	build.Init()
 	build.IsRmtemp = false
-
-	artifacts, err := deb.NewWriters(pkg)
+	artifacts, err := deb.NewWriters(ctrl)
 	if err != nil {
 		log.Fatalf("Error building binary: %v", err)
 	}

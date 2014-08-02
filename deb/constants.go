@@ -44,7 +44,7 @@ const (
 	BinaryControlArchiveNameDefault = "control.tar.gz"
 
 	//OutDirDefault is the default output directory for temp or dist files
-	outDirDefault  = "_out"
+	outDirDefault  = "target"
 	DebianDir      = "debian"
 )
 
@@ -66,10 +66,10 @@ const (
 	ProvidesFName   = "Provides"
 	ReplacesFName   = "Replaces"
 
-	BuildDependsFName      = "BuildDepends" // BuildDepends is only required for "sourcedebs".
-	BuildDependsIndepFName = "BuildDependsIndep"
-	ConflictsIndepFName    = "ConflictsIndep"
-	BuiltUsingFName        = "BuiltUsing"
+	BuildDependsFName      = "Build-Depends" // BuildDepends is only required for "sourcedebs".
+	BuildDependsIndepFName = "Build-Depends-Indep"
+	ConflictsIndepFName    = "Conflicts-Indep"
+	BuiltUsingFName        = "Built-Using"
 
 	PriorityFName         = "Priority"
 	StandardsVersionFName = "StandardsVersion"
@@ -85,7 +85,65 @@ var (
 	TempDirDefault = filepath.Join(outDirDefault, "tmp")
 
 	//DistDirDefault is the default directory for built artifacts
-	DistDirDefault = filepath.Join(outDirDefault, "dist")
+	DistDirDefault = outDirDefault
 
 	MaintainerScripts = []string{"postinst", "postrm", "prerm", "preinst"}
+
+	//SourceFields are the fields applicable to Source packages 
+	//
+	// see http://manpages.ubuntu.com/manpages/precise/man5/deb-src-control.5.html://manpages.ubuntu.com/manpages/precise/man5/deb-src-control.5.html
+	SourceFields = []string{
+		SourceFName,
+		MaintainerFName,
+		"Uploaders",
+		StandardsVersionFName,
+		"DM-Upload-Allowed",
+		"Homepage",
+		"Bugs",
+		"Vcs-Arch",
+		"Vcs-Bzr",
+		"Vcs-Cvs",
+		"Vcs-Darcs",
+		"Vcs-Git",
+		"Vcs-Hg",
+		"Vcs-Mtn",
+		"Vcs-Svn",
+		"Vcs-Browser",
+		"Origin",
+		SectionFName,
+		PriorityFName,
+		BuildDependsFName,
+		"Build-Depends-Indep",
+		"Build-Conflicts",
+		"Build-Conflicts-Indep",
+	}
+
+	//BinaryFields are the fields applicable to binary packages
+	//
+	// see http://manpages.ubuntu.com/manpages/precise/man5/deb-src-control.5.html://manpages.ubuntu.com/manpages/precise/man5/deb-src-control.5.html
+	BinaryFields = []string{
+		PackageFName,
+		ArchitectureFName,
+		"Package-Type",
+		"Subarchitecture",
+		"Kernel-Version",
+		"Installer-Menu-Item",
+		"Essential",
+		"Multi-Arch",
+		"Tag",
+		DescriptionFName,
+		DependsFName,
+		PreDependsFName,
+		RecommendsFName,
+		SuggestsFName,
+		"Breaks",
+		"Enhances",
+		"Replaces",
+		"Conflicts",
+		"Provides",
+		"Built-Using",
+		PriorityFName,
+		SectionFName,
+		"Homepage",
+	}
 )

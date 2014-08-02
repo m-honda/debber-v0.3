@@ -13,7 +13,7 @@ import (
 
 func Example_buildBinaryDeb() {
 
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	pkg := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
 	exesMap := map[string][]string{
 		"amd64": []string{filepath.Join(deb.TempDirDefault, "/a.amd64")},
 		"i386":  []string{filepath.Join(deb.TempDirDefault, "/a.i386")},
@@ -44,7 +44,7 @@ func Example_buildBinaryDeb() {
 
 func Test_buildBinaryDeb(t *testing.T) {
 
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	pkg := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
 	exesMap := map[string][]string{
 		"amd64": []string{filepath.Join(deb.TempDirDefault, "a.amd64")},
 		"i386":  []string{filepath.Join(deb.TempDirDefault, "a.i386")},

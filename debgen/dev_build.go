@@ -16,6 +16,7 @@
 
 package debgen
 
+/*
 import (
 	"fmt"
 	"github.com/debber/debber-v0.3/deb"
@@ -38,3 +39,4 @@ func GenDevArtifact(ddpkg *deb.Control, build *BuildParams, mappedFiles map[stri
 	}
 	return err
 }
+*/

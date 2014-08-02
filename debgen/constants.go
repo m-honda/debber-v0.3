@@ -28,7 +28,7 @@ tar-ignore = .bzr` //specifies files to ignore while building.
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-export GOPATH=$(CURDIR){{range $i, $gpe := .Package.ExtraData.GoPathExtra }}:{{$gpe}}{{end}}
+export GOPATH=$(CURDIR){{range $i, $gpe := .ExtraData.GoPathExtra }}:{{$gpe}}{{end}}
 
 PKGDIR=debian/{{.Package.Get "Package"}}
 
@@ -81,18 +81,21 @@ Architecture: {{.Deb.Architecture}}
 `
 
 	// The debian control file (source debs) defines general package metadata (but not version information)
-	TemplateSnippetSourcedebControl = `Source: {{.Package.Get "Package"}}
-Section: {{.Package.Get "Section"}}
-Priority: {{.Package.Get "Priority"}}
-Maintainer: {{.Package.Get "Maintainer"}}
-Build-Depends: {{.Package.Get "BuildDepends"}}
-Standards-Version: {{.Package.Get "StandardsVersion"}}`
+	TemplateSnippetControlSourcePackage = `Source: {{.Get "Source"}}
+Section: {{.Get "Section"}}
+Priority: {{.Get "Priority"}}
+Maintainer: {{.Get "Maintainer"}}
+Build-Depends: {{.Get "BuildDepends"}}
+Standards-Version: {{.Get "StandardsVersion"}}`
 
-	TemplateSnippetSourcedebControlPackage = `Package: {{.Package.Get "Package"}}
-Architecture: {{.Package.Get "Architecture"}}
-{{if .Package.Get "Depends"}}Depends: {{.Package.Get "Depends"}}
-{{end}}Description: {{.Package.Get "Description"}}
-{{.Package.Get "Other"}}`
+	TemplateSnippetControlBinPackage = `Package: {{.Get "Package"}}
+Architecture: {{.Get "Architecture"}}
+{{if .Get "Depends"}}Depends: {{.Get "Depends"}}
+{{end}}Description: {{.Get "Description"}}`
+
+	TemplateSourcedebControl = `{{range .Package}}{{if .Get "Source"}}` + TemplateSnippetControlSourcePackage + `{{end}}{{if .Get "Package"}}` + TemplateSnippetControlBinPackage + `{{end}}
+
+{{end}}`
 
 	TemplateSnippetSourcedebControlDevPackage = `Package: {{.Package.Get "Package"}}-dev
 Architecture: {{.Package.Get "Architecture"}}
@@ -101,10 +104,10 @@ Architecture: {{.Package.Get "Architecture"}}
 Section: libdevel
 {{.Package.Get "Other"}}`
 
-
+/*
 	TemplateSourcedebControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage
 	TemplateSourcedebWithDevControl = TemplateSnippetSourcedebControl + "\n\n" + TemplateSnippetSourcedebControlPackage + "\n\n" + TemplateSnippetSourcedebControlDevPackage
-
+*/
 	// The dsc file defines package metadata AND checksums
 	TemplateDebianDsc = `Format: {{.Package.Get "Format"}}
 Source: {{.Package.Get "Package"}}

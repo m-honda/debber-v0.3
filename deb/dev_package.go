@@ -16,6 +16,7 @@
 
 package deb
 
+/*
 // NewDevPackage is a factory for creating '-dev' packages from packages.
 // It just does a copy, appends "-dev" to the name, and sets the
 func NewDevPackage(pkg *Control) *Control {
@@ -26,3 +27,4 @@ func NewDevPackage(pkg *Control) *Control {
 	return devpkg
 
 }
+*/

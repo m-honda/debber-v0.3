@@ -7,19 +7,19 @@ import (
 )
 
 func Example_genSourcePackage() {
-	pkg := deb.NewControl("testpkg", "0.0.2", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ")
+	ctrl := deb.NewControlDefault("testpkg", "me", "me@a", "Dummy package for doing nothing", "testpkg is package ", true)
 
 	build := debgen.NewBuildParams()
 	build.IsRmtemp = false
-	debgen.ApplyGoDefaults(pkg)
-	spkg := deb.NewSourcePackage(pkg)
+	debgen.ApplyGoDefaults(ctrl)
+	spkg := deb.NewSourcePackage(ctrl)
 	err := build.Init()
 	if err != nil {
 		log.Fatalf("Error initializing dirs: %v", err)
 	}
 	spgen := debgen.NewSourcePackageGenerator(spkg, build)
 	spgen.ApplyDefaultsPureGo()
-	sourcesDestinationDir := pkg.Get(deb.PackageFName) + "_" + pkg.Get(deb.VersionFName)
+	sourcesDestinationDir := ctrl.Get(deb.SourceFName) + "_" + ctrl.Get(deb.VersionFName)
 	sourceDir := ".."
 	sourcesRelativeTo := debgen.GetGoPathElement(sourceDir)
 	spgen.OrigFiles, err = debgen.GlobForSources(sourcesRelativeTo, sourceDir, debgen.GlobGoSources, sourcesDestinationDir, []string{build.TmpDir, build.DestDir})

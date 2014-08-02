@@ -35,7 +35,7 @@ func NewControlFileReader(rdr io.Reader) *ControlFileReader {
 
 // Parse parses a stream into a package definition.
 func (dscr *ControlFileReader) Parse() (*Control, error) {
-	pkg := NewEmptyControl()
+	ctrl := NewControlEmpty()
 	br := bufio.NewReader(dscr.Reader)
 	para := 0
 	lastField := ""
@@ -54,20 +54,20 @@ func (dscr *ControlFileReader) Parse() (*Control, error) {
 			res := strings.SplitN(line, ":", 2)
 			lastField = res[0]
 			lastVal = strings.TrimSpace(res[1])
-			err = pkg.Paragraphs[para].Set(lastField, lastVal)
+			err = (*ctrl)[para].Set(lastField, lastVal)
 			if err != nil {
 				return nil, err
 			}
 		//New paragraph:
 		} else if len(strings.TrimSpace(line)) == 0 {
 			para++
-			for len(pkg.Paragraphs) < para+1 {
-				pkg.Paragraphs = append(pkg.Paragraphs, NewPackage())
+			for len(*ctrl) < para+1 {
+				*ctrl = append(*ctrl, NewPackage())
 			}
 		//Additional line for previous line:
 		} else if spaceIndex==0 {
 			lastVal += "\n" + strings.TrimSpace(line)
-			err = pkg.Paragraphs[para].Set(lastField, lastVal)
+			err = (*ctrl)[para].Set(lastField, lastVal)
 			if err != nil {
 				return nil, err
 			}
@@ -75,5 +75,5 @@ func (dscr *ControlFileReader) Parse() (*Control, error) {
 			return nil, fmt.Errorf("Unexpected line: '%s' / first colon: %d / first space: %d", line, colonIndex, spaceIndex)
 		}
 	}
-	return pkg, nil
+	return ctrl, nil
 }
