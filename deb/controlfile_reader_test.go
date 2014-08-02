@@ -16,7 +16,10 @@ var testControlFiles = []string{
 	}
 
 func TestParseControlFile(t *testing.T) {
-	for _, filename := range testControlFiles {
+	tcf2 := []string{}
+	copy(tcf2, testControlFiles)
+	tcf2 = append(tcf2, filepath.Join("testdata", "adduser_3.112ubuntu1.dsc"))
+	for _, filename := range tcf2 {
 		t.Logf("Package contents of %v:", filename)
 		file, err := os.Open(filename)
 		if err != nil {

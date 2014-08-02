@@ -29,7 +29,10 @@ func debGen(input []string) {
 	fs.StringVar(&opts.binAmd64Glob, "bin-amd64", "*amd64/*", "Glob pattern for binaries for the amd64 platform.")
 	fs.StringVar(&opts.binAnyGlob, "bin-any", "*any/*", "Glob pattern for binaries for *any* platform.")
 	fs.StringVar(&opts.sourcesDest, "sources-dest", debgen.DevGoPathDefault + "/src", "directory containing sources.")
-	fs.StringVar(&opts.archFilter, "arch-filter", "", "Filter by Architecture. Comma-separated [386,armhf,amd64,all]") //TODO filter outputs by arch?
+
+//TODO filter outputs by arch?
+//	fs.StringVar(&opts.archFilter, "arch-filter", "", "Filter by Architecture. Comma-separated [386,armhf,amd64,all]") 
+
 	fs.StringVar(&opts.resourcesGlob, "resources", "", "directory containing resources for this platform")
 	fs.StringVar(&opts.version, "version", "", "Package version")
 	err := fs.Parse(os.Args[2:])
@@ -39,6 +42,8 @@ func debGen(input []string) {
 	if opts.version == "" {
 		log.Fatalf("Error: --version is a required flag")
 	}
+
+	//Read control data
 	fi, err := os.Open(filepath.Join(build.DebianDir, "control"))
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -48,10 +53,14 @@ func debGen(input []string) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
+
+	// Initiate build
 	err = build.Init()
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
+
+	//Build ...
 	sourcePara := ctrl.SourceParas()[0]
 	log.Printf("sourcePara: %+v", sourcePara)
 	for _, binPara := range ctrl.BinaryParas() {

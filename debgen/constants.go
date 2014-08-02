@@ -110,12 +110,13 @@ Section: libdevel
 */
 	// The dsc file defines package metadata AND checksums
 	TemplateDebianDsc = `Format: {{.Package.Get "Format"}}
-Source: {{.Package.Get "Package"}}
+Source: {{.Package.Get "Source"}}
 Binary: {{.Package.Get "Package"}}
 Architecture: {{.Package.Get "Architecture"}}
 Version: {{.Package.Get "Version"}}
 Maintainer: {{.Package.Get "Maintainer"}}
-Standards-Version: {{.Package.Get "Standards-Version"}}
+{{if .Package.Get "Uploaders"}}Uploaders: {{.Package.Get "Uploaders"}}
+{{end}}Standards-Version: {{.Package.Get "Standards-Version"}}
 Build-Depends: {{.Package.Get "Build-Depends"}}
 Priority: {{.Package.Get "Priority"}}
 Section: {{.Package.Get "Section"}}

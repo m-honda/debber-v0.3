@@ -32,6 +32,11 @@ type ControlFileReader struct {
 func NewControlFileReader(rdr io.Reader) *ControlFileReader {
 	return &ControlFileReader{rdr}
 }
+const ( 
+	beginPGPSignature = "-----BEGIN PGP SIGNATURE-----"
+	endPGPSignature = "-----END PGP SIGNATURE-----"
+	beginPGPSignedMessage = "-----BEGIN PGP SIGNED MESSAGE-----"
+)
 
 // Parse parses a stream into a package definition.
 func (dscr *ControlFileReader) Parse() (*Control, error) {
@@ -40,6 +45,7 @@ func (dscr *ControlFileReader) Parse() (*Control, error) {
 	para := 0
 	lastField := ""
 	lastVal := ""
+	isSig := false
 	for {
 		line, err := br.ReadString('\n')
 		if err == io.EOF {
@@ -49,8 +55,25 @@ func (dscr *ControlFileReader) Parse() (*Control, error) {
 		}
 		colonIndex := strings.Index(line, ":")
 		spaceIndex := strings.Index(line, " ")
+		//Handle signed DSC files (but not the signature itself)
+		if strings.HasPrefix(line, "-----BEGIN PGP") || strings.HasPrefix(line, "-----END PGP") {
+			switch strings.TrimSpace(line) {
+			case beginPGPSignature:
+				//TODO: swallow subsequent lines
+				isSig = true
+			case endPGPSignature:
+				//continue
+				isSig = false
+			case beginPGPSignedMessage:
+				//continue
+			default:
+				return nil, fmt.Errorf("Unrecognised PGP line: %s", line)
+			}
+		// part of signature.
+		} else if isSig {
+			// ignore this signature line.
 		//New field:
-		if colonIndex >-1 && (spaceIndex==-1 || colonIndex<spaceIndex) {
+		} else if colonIndex >-1 && (spaceIndex==-1 || colonIndex<spaceIndex) {
 			res := strings.SplitN(line, ":", 2)
 			lastField = res[0]
 			lastVal = strings.TrimSpace(res[1])
