@@ -65,8 +65,8 @@ func (drdr *Reader) NextTar() (string, *tar.Reader, error) {
 	}
 }
 
-// DebParseMetadata reads an artifact's contents.
-func DebParseMetadata(rdr io.Reader) (*Control, error) {
+// ParseDebMetadata reads an artifact's contents.
+func ParseDebMetadata(rdr io.Reader) (*Control, error) {
 
 	arr, err := ar.NewReader(rdr)
 	if err != nil {

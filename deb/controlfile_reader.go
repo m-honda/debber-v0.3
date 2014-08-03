@@ -73,21 +73,18 @@ func (dscr *ControlFileReader) Parse() (*Control, error) {
 			// part of signature.
 		} else if isSig {
 			// ignore this signature line.
-			//New field:
-		} else if colonIndex > -1 && (spaceIndex == -1 || colonIndex < spaceIndex) {
+		} else if colonIndex > -1 && (spaceIndex == -1 || colonIndex < spaceIndex) { //New field:
 			res := strings.SplitN(line, ":", 2)
 			lastField = res[0]
 			lastVal = strings.TrimSpace(res[1])
 			(*ctrl)[para].Set(lastField, lastVal)
-			//New paragraph:
-		} else if len(strings.TrimSpace(line)) == 0 {
+		} else if len(strings.TrimSpace(line)) == 0 { //Empty line == New paragraph:
 			para++
 			for len(*ctrl) < para+1 {
 				*ctrl = append(*ctrl, NewPackage())
 			}
-			//Additional line for previous line:
-		} else if spaceIndex == 0 {
-			lastVal += "\n" + strings.TrimSpace(line)
+		} else if spaceIndex == 0 { //Additional line for current field:
+			lastVal += "\n" + strings.TrimSuffix(line, "\n")
 			(*ctrl)[para].Set(lastField, lastVal)
 		} else {
 			return nil, fmt.Errorf("Unexpected line: '%s' / first colon: %d / first space: %d", line, colonIndex, spaceIndex)

@@ -11,12 +11,12 @@ import (
 	"testing"
 )
 
-func XTest_parse(t *testing.T) {
-	rdr, err := os.Open(filepath.Join(".", "testpkg_0.0.2_amd64.deb"))
+func Test_parse(t *testing.T) {
+	rdr, err := os.Open(filepath.Join("testdata", "test_0.3.0_amd64.deb"))
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	pkg, err := deb.DebParseMetadata(rdr)
+	pkg, err := deb.ParseDebMetadata(rdr)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}

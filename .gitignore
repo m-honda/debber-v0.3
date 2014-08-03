@@ -22,7 +22,7 @@ _cgo_export.*
 _testmain.go
 
 *.exe
-*.deb
+*.cover
 
 dist
 .temp

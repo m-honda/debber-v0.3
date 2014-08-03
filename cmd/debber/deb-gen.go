@@ -61,7 +61,7 @@ func debGen(input []string) {
 		log.Fatalf("%v", err)
 	}
 
-	//Build ...
+	//Build ... assume just one source package
 	sourcePara := ctrl.SourceParas()[0]
 	log.Printf("sourcePara: %+v", sourcePara)
 	for _, binPara := range ctrl.BinaryParas() {

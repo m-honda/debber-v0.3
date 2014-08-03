@@ -72,5 +72,10 @@ func TestValidateControlFiles(t *testing.T) {
 			t.Logf("Package contents: %+v", pkg)
 		}
 		t.Logf("Package contents: %+v", (*ctrl)[0])
+		err = deb.ValidateControl(ctrl)
+
+			if err != nil {
+				t.Errorf("Invalid ctrl: %v.", err)
+			}
 	}
 }
