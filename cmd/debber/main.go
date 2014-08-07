@@ -14,6 +14,9 @@ const (
 	TaskDebContentsDebian = "deb:contents-debian"
 	TaskGenDev            = "dev:gen"
 	TaskGenSource         = "source:gen"
+	TaskControlInit         = "control:init"
+	TaskRulesInit         = "rules:init"
+	TaskCopyrightInit         = "copyright:init"
 )
 
 var tasks = []string{
@@ -24,6 +27,9 @@ var tasks = []string{
 	TaskDebControl,
 	TaskDebContents,
 	TaskDebContentsDebian,
+	TaskControlInit,
+	TaskRulesInit,
+	TaskCopyrightInit,
 }
 
 func main() {
@@ -36,11 +42,18 @@ func main() {
 	}
 	task := os.Args[1]
 	args := os.Args[2:]
+	var err error
 	switch task {
 	case TaskInit:
-		initDebber(args)
+		err = initDebber(args)
 	case TaskChangelogAdd:
-		changelogAdd(args)
+		err = changelogAddEntryTask(args)
+	case TaskControlInit:
+		err = controlInitTask(args)
+	case TaskRulesInit:
+		err = rulesInitTask(args)
+	case TaskCopyrightInit:
+		err = copyrightInitTask(args)
 	case TaskGenDeb:
 		debGen(args)
 	case TaskGenSource:
@@ -58,6 +71,10 @@ func main() {
 		log.Printf("Unrecognised task '%s'", task)
 		log.Printf("Please specify one of: %v", tasks)
 		log.Printf("For help on any task, use `debber <task> -h`")
+		os.Exit(1)
+	}
+	if err != nil {
+		log.Printf("%v", err)
 		os.Exit(1)
 	}
 

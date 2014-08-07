@@ -138,6 +138,10 @@ Files:{{range .Checksums.ChecksumsMd5}}
 ==========
 
 `
+	TemplateCopyrightBasic = `Files: *
+Copyright: {{.ExtraData.Year}} {{.Package.Get "Maintainer"}}
+License: {{.ExtraData.License}}
+`
 	DevGoPathDefault   = "/usr/share/gocode" // This is used by existing -dev.deb packages e.g. golang-doozer-dev and golang-protobuf-dev
 	GoPathExtraDefault = ":" + DevGoPathDefault
 
