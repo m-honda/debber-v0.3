@@ -219,14 +219,25 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 					}
 					log.Printf("sources matching glob: %+v", sources)
 				}*/
+/*
 			sourcesDestinationDir := sourcePara.Get(deb.SourceFName) + "_" + sourcePara.Get(deb.VersionFName)
-			sources, err := GlobForSources(build.SourcesRelativeTo, build.SourceDir, build.SourcesGlob, sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
-			if err != nil {
-				return nil, fmt.Errorf("Error resolving sources: %v", err)
+			for _, sourceFinder := range build.SourceFinders {
+				sourcesRelativeTo := sourceFinder.BaseDir
+				var sourceDir string
+				if sourceFinder.IncludeDir != "" {
+					sourceDir = sourceFinder.IncludeDir
+				} else {
+					sourceDir = sourceFinder.BaseDir
+				}
+				sources, err := GlobForSources(sourcesRelativeTo, sourceDir, sourceFinder.Glob, sourceFinder.Target + sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
+				if err != nil {
+					return nil, fmt.Errorf("Error resolving sources: %v", err)
+				}
+				for k, v := range sources {
+					dataFiles[k] = v
+				}
 			}
-			for k, v := range sources {
-				dataFiles[k] = v
-			}
+*/
 		} else {
 			// no sources
 		}
@@ -327,30 +338,26 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 			if err != nil {
 				return nil, fmt.Errorf("%v", err)
 			}
-			globs := []string{}
-			// add binaries where globs are defined ...
-			switch arch {
-			case "386":
-				globs = []string{build.Bin386Glob, build.BinAnyGlob}
-			case "amd64":
-				globs = []string{build.BinAmd64Glob, build.BinAnyGlob}
-			case "armhf":
-				globs = []string{build.BinArmhfGlob, build.BinAnyGlob}
-			}
-			for _, glob := range globs {
-				if glob != "" {
-					bins, err := filepath.Glob(glob)
-					if err != nil {
-						return nil, fmt.Errorf("%v", err)
-					}
-					log.Printf("glob: %s, bins: %v", glob, bins)
-					//log.Printf("Binaries matching glob for '%s': %+v", arch, bins)
-					for _, bin := range bins {
-						dgen.DataFiles[deb.ExeDirDefault+"/"+bin] = bin
-
+/*
+			binFinders, ok := build.BinFinders[arch]
+			if ok {
+				for _, binFinder := range binFinders {
+					if binFinder.Glob != "" {
+						glob := filepath.Join(binFinder.BaseDir, binFinder.Glob)
+						bins, err := filepath.Glob(glob)
+						if err != nil {
+							return nil, fmt.Errorf("%v", err)
+						}
+						log.Printf("glob: %s, bins: %v", glob, bins)
+						//log.Printf("Binaries matching glob for '%s': %+v", arch, bins)
+						for _, bin := range bins {
+							target := binFinder.Target + "/" + bin
+							dgen.DataFiles[target] = bin
+						}
 					}
 				}
 			}
+*/
 			log.Printf("All data files: %v", dgen.DataFiles)
 		}
 	}

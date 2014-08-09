@@ -11,6 +11,7 @@ import (
 func debGen(input []string) error {
 	build := debgen.NewBuildParams()
 	fs := InitBuildFlags(cmdName+" "+TaskGenDeb, build)
+/*
 	fs.StringVar(&build.SourcesGlob, "sources-glob", "**.go", "Glob pattern for sources.")
 	fs.StringVar(&build.SourceDir, "sources-dir", ".", "source dir")
 	fs.StringVar(&build.SourcesRelativeTo, "sources-relative-to", "", "Sources relative to (it will assume relevant gopath element, unless you specify this)")
@@ -18,11 +19,12 @@ func debGen(input []string) error {
 	fs.StringVar(&build.BinArmhfGlob, "bin-armhf", "*armhf/*", "Glob pattern for binaries for the armhf platform.")
 	fs.StringVar(&build.BinAmd64Glob, "bin-amd64", "*amd64/*", "Glob pattern for binaries for the amd64 platform.")
 	fs.StringVar(&build.BinAnyGlob, "bin-any", "*any/*", "Glob pattern for binaries for *any* platform.")
+*/
 	//fs.StringVar(&build.sourcesDest, "sources-dest", debgen.DevGoPathDefault+"/src", "directory containing sources.")
 	arches := ""
 	fs.StringVar(&arches, "arch-filter", "", "Filter by Architecture. Comma-separated [386,armhf,amd64,all]")
 
-	fs.StringVar(&build.ResourcesGlob, "resources", "", "directory containing resources for this platform")
+//	fs.StringVar(&build.ResourcesGlob, "resources", "", "directory containing resources for this platform")
 	fs.StringVar(&build.Version, "version", "", "Package version")
 	err := fs.Parse(os.Args[2:])
 	if err != nil {

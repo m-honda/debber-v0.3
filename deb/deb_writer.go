@@ -50,7 +50,7 @@ func NewWriters(ctrl *Control) (map[Architecture]*Writer, error) {
 	return ret, nil
 }
 
-// Factory of platform build information
+// NewWriter returns a Writer with defaults already set.
 func NewWriter(ctrl *Control, architecture Architecture) *Writer {
 	bdeb := &Writer{Control: ctrl, Architecture: architecture}
 	bdeb.SetDefaults()

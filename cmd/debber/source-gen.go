@@ -10,14 +10,18 @@ import (
 
 
 func sourceGen(input []string) error {
-	//set to empty strings because they're being overridden
-	//pkg := deb.NewControlEmpty()
 	build := debgen.NewBuildParams()
 	fs := InitBuildFlags(cmdName+" "+TaskGenSource, build)
-	//	fs.StringVar(&pkg.Architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
-	fs.StringVar(&build.SourceDir, "sources", ".", "source dir")
-	fs.StringVar(&build.SourcesGlob, "sources-glob", debgen.GlobGoSources, "Glob for inclusion of sources")
-	fs.StringVar(&build.SourcesRelativeTo, "sources-relative-to", "", "Sources relative to (it will assume relevant gopath element, unless you specify this)")
+	var sourceDir string
+	fs.StringVar(&sourceDir, "sources", ".", "source dir")
+	var isDiscoverGoPath bool
+	fs.BoolVar(&isDiscoverGoPath, "discover-gopath", true, "Use Go-style path (try to discover base relative to GOPATH element)")
+	var sourcesGlob string
+	fs.StringVar(&sourcesGlob, "sources-glob", debgen.GlobGoSources, "Glob for inclusion of sources")
+	var destinationDir string
+	fs.StringVar(&destinationDir, "destination-dir", debgen.DevGoPathDefault, "Directory name to store sources in archive")
+	var sourcesRelativeTo string
+	fs.StringVar(&sourcesRelativeTo, "sources-relative-to", ".", "Sources relative to (this is ignored when -discover-gopath is selected)")
 	fs.StringVar(&build.Version, "version", "", "Package version")
 
 	// parse and validate flags
@@ -28,9 +32,12 @@ func sourceGen(input []string) error {
 	if build.Version == "" {
 		return fmt.Errorf("Error: --version is a required flag")
 	}
-
-	if build.SourcesRelativeTo == "" {
-		build.SourcesRelativeTo = debgen.GetGoPathElement(build.SourceDir)
+	if isDiscoverGoPath {
+		sourcesRelativeTo = debgen.GetGoPathElement(sourceDir)
+	}
+	mappedSources, err := debgen.GlobForSources(sourcesRelativeTo, sourceDir, sourcesGlob, destinationDir, []string{build.TmpDir, build.DebianDir})
+	if err != nil {
+		return fmt.Errorf("%v", err)
 	}
 	fi, err := os.Open(filepath.Join(build.DebianDir, "control"))
 	if err != nil {
@@ -44,6 +51,9 @@ func sourceGen(input []string) error {
 	}
 
 	spgen, err := debgen.PrepareSourceDebGenerator(ctrl, build)
+	for k, v := range mappedSources {
+		spgen.OrigFiles[k] = v
+	}
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}

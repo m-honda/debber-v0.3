@@ -39,7 +39,7 @@ const (
 	ArchAll Architecture = "all"
 )
 
-//Binary arches only
+//ResolveArches currently parses 'Binary' arches only
 func ResolveArches(arches string) ([]Architecture, error) {
 	arches = strings.TrimSpace(arches)
 

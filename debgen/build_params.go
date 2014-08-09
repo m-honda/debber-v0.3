@@ -36,21 +36,36 @@ type BuildParams struct {
 	ResourcesDir string // Optional. Only if debgo packages your resources automatically.
 
 	//TemplateStringsSource map[string]string //Populate this to fulfil templates for the different control files.
-
-	Bin386Glob        string
-	BinArmhfGlob      string
-	BinArmelGlob      string
-	BinAmd64Glob      string
-	BinAnyGlob        string
-
+/*
+	BinFinders        map[deb.Architecture][]FileFinder
+/*	BinArmhfGlob      FileFinder
+	BinArmelGlob      FileFinder
+	BinAmd64Glob      FileFinder
+	BinAnyGlob        FileFinder
+	ResourcesDir      string
 	ResourcesGlob     string
-	SourceDir         string
+*/
+
+/*
+	SourceIncludeDir  string //In this case it's used as 
 	SourcesGlob       string
 	SourcesRelativeTo string //special variable to ensure that e.g. GOPATH is properly set up.
+	
+	ResourceFinders []FileFinder
+	SourceFinders   []FileFinder
+*/
 	Version           string
 	Arches            []deb.Architecture
 
 }
+
+type FileFinder struct {
+	BaseDir string //Usually set this, except for Go sources, where debber will find the base for you based on the IncludeDir
+	IncludeDir string //Usually leave blank, except for Go sources.
+	Glob string //'Glob' pattern for finding files.
+	Target string //Target dir in eventual Deb file
+}
+
 
 //Factory for BuildParams. Populates defaults.
 func NewBuildParams() *BuildParams {
@@ -62,6 +77,11 @@ func NewBuildParams() *BuildParams {
 	bp.DebianDir = deb.DebianDir
 	bp.TemplateDir = deb.TemplateDirDefault
 	bp.ResourcesDir = deb.ResourcesDirDefault
+//	bp.BinFinders = map[deb.Architecture][]FileFinder{}
+//	bp.ResourceFinders = []FileFinder{ {BaseDir: ".",Glob:"Readme.*", Target: "/usr/share/doc/.{{Package}}/"} }
+
+	//Go only ...
+//	bp.SourceFinders = []FileFinder{ {IncludeDir: ".",Glob:"**.go", Target: "/usr/share/gocode/src/"} }
 	return bp
 }
 

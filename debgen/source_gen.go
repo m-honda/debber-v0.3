@@ -247,11 +247,28 @@ func PrepareSourceDebGenerator(ctrl *deb.Control, build *BuildParams) (*SourcePa
 
 	//Build ...
 	spkg := deb.NewSourcePackage(ctrl)
-	sourcesDestinationDir := sourcePara.Get(deb.SourceFName) + "_" + sourcePara.Get(deb.VersionFName)
 	spgen := NewSourcePackageGenerator(spkg, build)
+/*
+	sourcesDestinationDir := sourcePara.Get(deb.SourceFName) + "_" + sourcePara.Get(deb.VersionFName)
+	for _, sourceFinder := range build.SourceFinders {
+		sourcesRelativeTo := sourceFinder.BaseDir
+		var sourceDir string
+		if sourceFinder.IncludeDir != "" {
+			sourceDir = sourceFinder.IncludeDir
+		} else {
+			sourceDir = sourceFinder.BaseDir
+		}
+		spgen.OrigFiles, err = GlobForSources(sourcesRelativeTo, sourceDir, sourceFinder.Glob, sourceFinder.Target + sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
+		if err != nil {
+			return nil, fmt.Errorf("Error resolving sources: %v", err)
+		}
+	}
+*/
+/*
 	spgen.OrigFiles, err = GlobForSources(build.SourcesRelativeTo, build.SourceDir, build.SourcesGlob, sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
 	if err != nil {
 		return nil, fmt.Errorf("Error resolving sources: %v", err)
 	}
+*/
 	return spgen, nil
 }

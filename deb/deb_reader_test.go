@@ -2,12 +2,8 @@ package deb_test
 
 import (
 	"github.com/debber/debber-v0.3/deb"
-	"github.com/laher/argo/ar"
-	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -22,7 +18,7 @@ func Test_parse(t *testing.T) {
 	}
 	t.Logf("Package: %+v", pkg)
 }
-
+/*
 //Reading an ar archive ...
 func XTest_learning_reading_ar(t *testing.T) {
 	rdr, err := os.Open(filepath.Join(deb.DistDirDefault, "testpkg_0.0.2_amd64.deb"))
@@ -60,11 +56,7 @@ func XTest_learning_reading_ar(t *testing.T) {
 		} else {
 			t.Logf("Unsupported file %s:\n", hdr.Name)
 		}
-		/*
-			if _, err := io.Copy(os.Stdout, arr); err != nil {
-				t.Fatalf("%v", err)
-			}
-		*/
 	}
 
 }
+*/

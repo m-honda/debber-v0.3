@@ -25,6 +25,9 @@ import (
 	"strings"
 	"time"
 )
+
+// TarWriterHelper makes directories for you, and has some simple functions for adding files & folders.
+// This can be used in conjunction with gzip compression (or others)
 type TarWriterHelper struct {
 	Tw *tar.Writer
 	DirsMade []string
@@ -88,7 +91,10 @@ func (twh *TarWriterHelper) AddFileOrDir(sourceFile, destName string) error {
 	}
 	//recurse as necessary
 	if finf.IsDir() {
-		twh.AddParentDirs(destName)
+		err = twh.AddParentDirs(destName)
+		if err != nil {
+			return err
+		}
 		err = twh.Tw.WriteHeader(TarHeader(destName, 0, int64(finf.Mode())))
 		if err != nil {
 			return err

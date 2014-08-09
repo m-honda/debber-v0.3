@@ -9,8 +9,12 @@ const (
 	DebianBinaryVersionDefault = "2.0"
 	//DebianCompatDefault - compatibility. Current version
 	DebianCompatDefault = "9"
-	//FormatDefault - the format specified in the dsc file (3.0 quilt uses a .debian.gz file rather than a .diff.gz file)
+	//FormatDefault - the format as specified in the dsc file (3.0 quilt uses a .debian.gz file rather than a .diff.gz file)
 	FormatDefault = "3.0 (quilt)"
+	//FormatQuilt - (3.0 quilt uses a .debian.gz file rather than a .diff.gz file)
+	FormatQuilt = "3.0 (quilt)"
+	//FormatNative - (3.0 native uses a .diff.gz file)
+	FormatNative = "3.0 (native)"
 	// StatusDefault is unreleased by default. Change this once you're happy with it.
 	StatusDefault = "unreleased"
 

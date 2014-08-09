@@ -85,7 +85,7 @@ func GetGoPathElement(workingDirectory string) string {
 	return gopath
 }
 
-// Glob for Go-specific sources
+// GlobForGoSources - Go-specific defaults for finding sources in a given dir
 func GlobForGoSources(sourcesDir string, ignore []string) (map[string]string, error) {
 	destinationDir := DevGoPathDefault
 	sourcesRelativeTo := GetGoPathElement(sourcesDir)
@@ -93,8 +93,7 @@ func GlobForGoSources(sourcesDir string, ignore []string) (map[string]string, er
 	return resources, err
 }
 
-// Glob for sources.
-// This function looks for source files, and prepares their paths for
+// GlobForSources looks for source files, and prepares their paths for inclusion on a unix-like filesystem
 func GlobForSources(sourcesRelativeDir, codeDir, glob, destinationPrefix string, ignoreFiles []string) (map[string]string, error) {
 	sourcesRelativeDirAbs, err := absAndResolveSymlinks(sourcesRelativeDir)
 	if err != nil {
