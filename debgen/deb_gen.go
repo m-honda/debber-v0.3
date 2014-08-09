@@ -358,7 +358,7 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 				}
 			}
 */
-			log.Printf("All data files: %v", dgen.DataFiles)
+//			log.Printf("All data files: %v", dgen.DataFiles)
 		}
 	}
 	return dgens, nil
