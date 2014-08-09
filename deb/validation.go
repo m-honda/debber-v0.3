@@ -31,7 +31,7 @@ func ValidateArchitecture(archString string) error {
 	if archString == "source" { //OK
 		return nil
 	}
-	_, err := resolveArches(archString)
+	_, err := ResolveArches(archString)
 	return err
 }
 

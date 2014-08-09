@@ -79,6 +79,7 @@ const (
 	OtherFName            = "Other"
 	SourceFName           = "Source"
 )
+
 /*
 Keyword	Meaning
 public-domain	No license required for any purpose; the work is not subject to copyright in any jurisdiction.
@@ -121,31 +122,31 @@ var (
 		"BSD-2-clause",
 		"BSD-3-clause",
 		"BSD-4-clause",
-		"ISC",	     
-		"CC-BY",	     
-		"CC-BY-SA",     
-		"CC-BY-ND",     
-		"CC-BY-NC",     
-		"CC-BY-NC-SA",  
-		"CC-BY-NC-ND",  
-		"CC0",	     
-		"CDDL",	     
-		"CPL",	     
-		"EFL",	     
-		"Expat",	     
-		"GPL",	     
-		"LGPL",	     
-		"GFDL",	     
-		"GFDL-NIV",     
-		"LPPL",	     
-		"MPL",	     
-		"Perl",	     
-		"Python",	     
-		"QPL",	     
-		"W3C",	     
-		"Zlib",	     
-		"Zope",	     
-			}
+		"ISC",
+		"CC-BY",
+		"CC-BY-SA",
+		"CC-BY-ND",
+		"CC-BY-NC",
+		"CC-BY-NC-SA",
+		"CC-BY-NC-ND",
+		"CC0",
+		"CDDL",
+		"CPL",
+		"EFL",
+		"Expat",
+		"GPL",
+		"LGPL",
+		"GFDL",
+		"GFDL-NIV",
+		"LPPL",
+		"MPL",
+		"Perl",
+		"Python",
+		"QPL",
+		"W3C",
+		"Zlib",
+		"Zope",
+	}
 )
 
 var (

@@ -22,17 +22,15 @@ import (
 	"testing"
 )
 
-
 func TestChecksums(t *testing.T) {
-		checksums := &deb.Checksums{}
-		basename := "1.txt"
-		p := filepath.Join("testdata", basename)
-		err := checksums.Add(p, basename)
-		if err != nil {
-			t.Fatalf("add failed: %+v", err)
-		}
-		if len(checksums.ChecksumsMd5) != 1 {
-			t.Fatalf("checksums wrong length")
-		}
+	checksums := &deb.Checksums{}
+	basename := "1.txt"
+	p := filepath.Join("testdata", basename)
+	err := checksums.Add(p, basename)
+	if err != nil {
+		t.Fatalf("add failed: %+v", err)
+	}
+	if len(checksums.ChecksumsMd5) != 1 {
+		t.Fatalf("checksums wrong length")
+	}
 }
-

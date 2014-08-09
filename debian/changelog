@@ -1,5 +1,5 @@
-debber () unreleased; urgency=low
+debber (1.2.1) unreleased; urgency=low
 
   * Initial import
 
- -- Am Laher <laher@github>  Sat, 02 Aug 2014 22:41:15 +1200
+ -- Am Laher <no-one@laher.net.nz>  Sat, 02 Aug 2014 22:41:15 +1200

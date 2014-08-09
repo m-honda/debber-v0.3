@@ -17,6 +17,7 @@
 package debgen
 
 import (
+	"fmt"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/targz"
 	"io/ioutil"
@@ -95,7 +96,8 @@ func (spgen *SourcePackageGenerator) GenOrigArchive() error {
 	if err != nil {
 		return err
 	}
-	err = TarAddFiles(tgzw.Writer, spgen.OrigFiles)
+	twh := NewTarWriterHelper(tgzw.Writer)
+	err = twh.AddFiles(spgen.OrigFiles)
 	if err != nil {
 		return err
 	}
@@ -117,7 +119,11 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 
 	// generate .debian.tar.gz (just containing debian/ directory)
 	tgzw, err := targz.NewWriterFromFile(filepath.Join(spgen.BuildParams.DestDir, spgen.SourcePackage.DebianFileName))
+			if err != nil {
+				return err
+			}
 	defer tgzw.Close()
+	twh := NewTarWriterHelper(tgzw.Writer)
 	resourceDir := spgen.BuildParams.DebianDir
 	templateDir := filepath.Join(spgen.BuildParams.TemplateDir, "source", DebianDir)
 
@@ -127,7 +133,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 		resourcePath := filepath.Join(resourceDir, debianFilePath)
 		_, err = os.Stat(resourcePath)
 		if err == nil {
-			err = TarAddFile(tgzw.Writer, resourcePath, debianFile)
+			err = twh.AddFile(resourcePath, DebianDir+"/"+debianFile)
 			if err != nil {
 				return err
 			}
@@ -136,7 +142,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 			if err != nil {
 				return err
 			}
-			err = TarAddBytes(tgzw.Writer, controlData, DebianDir+"/"+debianFile, int64(0644))
+			err = twh.AddBytes(controlData, DebianDir+"/"+debianFile, int64(0644))
 			if err != nil {
 				return err
 			}
@@ -148,7 +154,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 		resourcePath := filepath.Join(spgen.BuildParams.DebianDir, scriptName)
 		_, err = os.Stat(resourcePath)
 		if err == nil {
-			err = TarAddFile(tgzw.Writer, resourcePath, scriptName)
+			err = twh.AddFile(resourcePath, DebianDir+"/"+scriptName)
 			if err != nil {
 				return err
 			}
@@ -161,7 +167,7 @@ func (spgen *SourcePackageGenerator) GenDebianArchive() error {
 				if err != nil {
 					return err
 				}
-				err = TarAddBytes(tgzw.Writer, scriptData, scriptName, 0755)
+				err = twh.AddBytes(scriptData, DebianDir+"/"+scriptName, 0755)
 				if err != nil {
 					return err
 				}
@@ -225,4 +231,27 @@ func (spgen *SourcePackageGenerator) GenSourceControlFile() error {
 		}
 	}
 	return err
+}
+
+
+func PrepareSourceDebGenerator(ctrl *deb.Control, build *BuildParams) (*SourcePackageGenerator, error) {
+
+	err := build.Init()
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+	sourcePara := ctrl.SourceParas()[0]
+	//sourcePara := deb.CopyPara(sp)
+	sourcePara.Set(deb.VersionFName, build.Version)
+	sourcePara.Set(deb.FormatFName, deb.FormatDefault)
+
+	//Build ...
+	spkg := deb.NewSourcePackage(ctrl)
+	sourcesDestinationDir := sourcePara.Get(deb.SourceFName) + "_" + sourcePara.Get(deb.VersionFName)
+	spgen := NewSourcePackageGenerator(spkg, build)
+	spgen.OrigFiles, err = GlobForSources(build.SourcesRelativeTo, build.SourceDir, build.SourcesGlob, sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
+	if err != nil {
+		return nil, fmt.Errorf("Error resolving sources: %v", err)
+	}
+	return spgen, nil
 }

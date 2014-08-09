@@ -44,7 +44,6 @@ func debContents(input []string) {
 
 }
 
-
 //debGetContents just lists the contents of a tar.gz file within the archive
 func debGetContents(rdr io.Reader, topLevelFilename string) ([]string, error) {
 	ret := []string{}
@@ -95,7 +94,6 @@ func debGetContents(rdr io.Reader, topLevelFilename string) ([]string, error) {
 	return ret, nil
 }
 
-
 func debContentsDebian(input []string) {
 	args := parseFlagsDeb(input)
 	for _, debFile := range args {
@@ -127,7 +125,6 @@ func parseFlagsDeb(input []string) []string {
 	}
 	return args
 }
-
 
 //debExtractFileL2 extracts a file from a tar.gz within the archive.
 func debExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilename string, destination io.Writer) error {
@@ -173,4 +170,3 @@ func debExtractFileL2(rdr io.Reader, topLevelFilename string, secondLevelFilenam
 	}
 	return fmt.Errorf("File not found")
 }
-

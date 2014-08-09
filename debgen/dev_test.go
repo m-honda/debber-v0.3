@@ -28,7 +28,7 @@ func Example_genDevPackage() {
 	}
 	for _, artifact := range artifacts {
 		dgen := debgen.NewDebGenerator(artifact, build)
-		dgen.OrigFiles = mappedFiles
+		dgen.DataFiles = mappedFiles
 		err = dgen.GenerateAllDefault()
 		if err != nil {
 			log.Fatalf("Error building -dev: %v", err)

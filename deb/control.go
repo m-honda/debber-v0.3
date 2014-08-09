@@ -54,6 +54,7 @@ func NewControlDefault(name, maintainerName, maintainerEmail, shortDescription, 
 	SetDefaults(ctrl)
 	return ctrl
 }
+
 /*
 func (ctrl *Control) NewDevPackage() *Package {
 	name := ctrl.Get(PackageFName)
@@ -94,7 +95,7 @@ func (ctrl *Control) GetArches() ([]Architecture, error) {
 	for _, pkg := range *ctrl {
 		_, arch, exists := pkg.GetExtended(ArchitectureFName)
 		if exists {
-			arches, err := resolveArches(arch)
+			arches, err := ResolveArches(arch)
 			return arches, err
 		}
 	}

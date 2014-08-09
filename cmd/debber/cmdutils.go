@@ -20,4 +20,3 @@ func InitBuildFlags(name string, build *debgen.BuildParams) *flag.FlagSet {
 	fs.StringVar(&build.DebianDir, "debian-dir", build.DebianDir, "'debian' dir (contains control file, changelog, postinst, etc)")
 	return fs
 }
-

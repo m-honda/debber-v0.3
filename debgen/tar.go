@@ -25,6 +25,14 @@ import (
 	"strings"
 	"time"
 )
+type TarWriterHelper struct {
+	Tw *tar.Writer
+	DirsMade []string
+}
+func NewTarWriterHelper(tw *tar.Writer) *TarWriterHelper {
+	twh := &TarWriterHelper{tw, []string{}}
+	return twh
+}
 
 // TarHeader is a factory for a tar header. Fixes slashes, populates ModTime
 func TarHeader(path string, datalen int64, mode int64) *tar.Header {
@@ -43,7 +51,11 @@ func TarHeader(path string, datalen int64, mode int64) *tar.Header {
 // TarAddFile adds a file from the file system
 // This is just a helper function
 // TODO: directories
-func TarAddFile(tw *tar.Writer, sourceFile, destName string) error {
+func (twh *TarWriterHelper) AddFile(sourceFile, destName string) error {
+	err := twh.AddParentDirs(destName)
+	if err != nil {
+		return err
+	}
 	fi, err := os.Open(sourceFile)
 	defer fi.Close()
 	if err != nil {
@@ -58,29 +70,34 @@ func TarAddFile(tw *tar.Writer, sourceFile, destName string) error {
 	if finf.IsDir() {
 		return fmt.Errorf("Can't add a directory using TarAddFile. See AddFileOrDir")
 	}
-	err = tw.WriteHeader(TarHeader(destName, finf.Size(), int64(finf.Mode())))
+	err = twh.Tw.WriteHeader(TarHeader(destName, finf.Size(), int64(finf.Mode())))
 	if err != nil {
 		return err
 	}
-	_, err = io.Copy(tw, fi)
+	_, err = io.Copy(twh.Tw, fi)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func TarAddFileOrDir(tw *tar.Writer, sourceFile, destName string) error {
+func (twh *TarWriterHelper) AddFileOrDir(sourceFile, destName string) error {
 	finf, err := os.Stat(sourceFile)
 	if err != nil {
 		return err
 	}
 	//recurse as necessary
 	if finf.IsDir() {
+		twh.AddParentDirs(destName)
+		err = twh.Tw.WriteHeader(TarHeader(destName, 0, int64(finf.Mode())))
+		if err != nil {
+			return err
+		}
 		err = filepath.Walk(sourceFile, func(path string, info os.FileInfo, err2 error) error {
 			if info != nil && !info.IsDir() {
 				rel, err := filepath.Rel(sourceFile, path)
 				if err == nil {
-					return TarAddFile(tw, rel, path)
+					return twh.AddFile(rel, path)
 				}
 				return err
 			}
@@ -90,15 +107,42 @@ func TarAddFileOrDir(tw *tar.Writer, sourceFile, destName string) error {
 		return err
 	}
 
-	return TarAddFile(tw, sourceFile, destName)
+	return twh.AddFile(sourceFile, destName)
+}
+//AddParentDirs adds the necessary dirs for debian-friendly tar archives
+func (twh *TarWriterHelper) AddParentDirs(filename string) error {
+	parentDirParts := strings.Split(filename, "/")
+	acc := ""
+	for _, pdp := range parentDirParts[0 : len(parentDirParts)-1] {
+		acc += pdp + "/"
+
+		if acc == "/" {
+		} else {
+			alreadyMade := false
+			for _, dirMade := range twh.DirsMade {
+				if dirMade == acc {
+					alreadyMade = true
+				}
+			}
+			if !alreadyMade {
+				mode := int64(0755 | 040000)
+				err := twh.Tw.WriteHeader(TarHeader(acc, 0, mode))
+				if err != nil {
+					return err
+				}
+				twh.DirsMade = append(twh.DirsMade, acc)
+			}
+		}
+	}
+	return nil
 }
 
-// TarAddFiles adds resources from file system.
+// AddFiles adds resources from file system.
 // The key should be the destination filename. Value is the local filesystem path
-func TarAddFiles(tw *tar.Writer, resources map[string]string) error {
+func (twh *TarWriterHelper) AddFiles(resources map[string]string) error {
 	if resources != nil {
 		for name, localPath := range resources {
-			err := TarAddFile(tw, localPath, name)
+			err := twh.AddFile(localPath, name)
 			if err != nil {
 				return err
 			}
@@ -107,13 +151,17 @@ func TarAddFiles(tw *tar.Writer, resources map[string]string) error {
 	return nil
 }
 
-// TarAddBytes adds a file by bytes with a given path
-func TarAddBytes(tw *tar.Writer, bytes []byte, destName string, mode int64) error {
-	err := tw.WriteHeader(TarHeader(destName, int64(len(bytes)), mode))
+// AddBytes adds a file by bytes with a given path
+func (twh *TarWriterHelper) AddBytes(bytes []byte, destName string, mode int64) error {
+	err := twh.AddParentDirs(destName)
 	if err != nil {
 		return err
 	}
-	_, err = tw.Write(bytes)
+	err = twh.Tw.WriteHeader(TarHeader(destName, int64(len(bytes)), mode))
+	if err != nil {
+		return err
+	}
+	_, err = twh.Tw.Write(bytes)
 	if err != nil {
 		return err
 	}

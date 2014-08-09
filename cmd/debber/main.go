@@ -14,9 +14,9 @@ const (
 	TaskDebContentsDebian = "deb:contents-debian"
 	TaskGenDev            = "dev:gen"
 	TaskGenSource         = "source:gen"
-	TaskControlInit         = "control:init"
+	TaskControlInit       = "control:init"
 	TaskRulesInit         = "rules:init"
-	TaskCopyrightInit         = "copyright:init"
+	TaskCopyrightInit     = "copyright:init"
 )
 
 var tasks = []string{
@@ -55,9 +55,9 @@ func main() {
 	case TaskCopyrightInit:
 		err = copyrightInitTask(args)
 	case TaskGenDeb:
-		debGen(args)
+		err = debGen(args)
 	case TaskGenSource:
-		sourceGen(args)
+		err = sourceGen(args)
 	case TaskDebControl:
 		debControl(args)
 	case TaskDebContents:

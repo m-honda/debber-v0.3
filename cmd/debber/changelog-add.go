@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
-	"fmt"
 	"os"
 	"path/filepath"
 	"text/template"

@@ -36,6 +36,20 @@ type BuildParams struct {
 	ResourcesDir string // Optional. Only if debgo packages your resources automatically.
 
 	//TemplateStringsSource map[string]string //Populate this to fulfil templates for the different control files.
+
+	Bin386Glob        string
+	BinArmhfGlob      string
+	BinArmelGlob      string
+	BinAmd64Glob      string
+	BinAnyGlob        string
+
+	ResourcesGlob     string
+	SourceDir         string
+	SourcesGlob       string
+	SourcesRelativeTo string //special variable to ensure that e.g. GOPATH is properly set up.
+	Version           string
+	Arches            []deb.Architecture
+
 }
 
 //Factory for BuildParams. Populates defaults.

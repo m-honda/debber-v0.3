@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/debber/debber-v0.3/deb"
 	"github.com/debber/debber-v0.3/debgen"
-	"log"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,7 +35,7 @@ func copyrightInit(ctrl *deb.Control, build *debgen.BuildParams, license string)
 	_, err = os.Stat(filename)
 	if os.IsNotExist(err) {
 		//create ..
-		f, err = os.Create(filename)
+		f, err = os.OpenFile(filename, os.O_WRONLY | os.O_CREATE, 0644)
 		if err != nil {
 			return fmt.Errorf("Error creating file: %v", err)
 		}
@@ -44,7 +44,7 @@ func copyrightInit(ctrl *deb.Control, build *debgen.BuildParams, license string)
 		return fmt.Errorf("Error reading existing changelog: %v", err)
 	} else {
 		//append..
-		f, err := os.OpenFile(filename, os.O_WRONLY, 0666)
+		f, err := os.OpenFile(filename, os.O_WRONLY | os.O_APPEND, 0644)
 		if err != nil {
 			return fmt.Errorf("Error opening file: %v", err)
 		}
@@ -71,7 +71,6 @@ func rulesInitTask(input []string) error {
 
 	return fmt.Errorf("rules:init not implemented yet")
 }
-
 
 func initDebber(input []string) error {
 	//set to nothing
@@ -151,7 +150,6 @@ func initDebber(input []string) error {
 	if err != nil {
 		return fmt.Errorf("Error initialising build: %v", err)
 	}
-
 
 	spkg := deb.NewSourcePackage(ctrl)
 	spgen := debgen.NewSourcePackageGenerator(spkg, build)

@@ -40,11 +40,28 @@ const (
 )
 
 //Binary arches only
-func resolveArches(arches string) ([]Architecture, error) {
+func ResolveArches(arches string) ([]Architecture, error) {
 	arches = strings.TrimSpace(arches)
-	if strings.HasPrefix(arches, "linux-") {
-		return resolveArches(strings.TrimPrefix(arches, "linux-"))
+
+	//recurse ...
+	if strings.Contains(arches, ",") {
+		archesArr := strings.Split(arches, ",")
+		architectures := []Architecture{}
+		for _, arch := range archesArr {
+			theseArchitectures, err := ResolveArches(arch)
+			if err != nil {
+				return nil, err
+			}
+			architectures = append(architectures, theseArchitectures...)
+		}
+		return architectures, nil
 	}
+
+	//strip linux- prefix
+	if strings.HasPrefix(arches, "linux-") {
+		return ResolveArches(strings.TrimPrefix(arches, "linux-"))
+	}
+	//reject other OSes (not supported yet)
 	if strings.Contains(arches, "-") {
 		return nil, fmt.Errorf("Linux is the only OS supported. Sorry")
 	}
