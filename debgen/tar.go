@@ -100,7 +100,6 @@ func (twh *TarWriterHelper) AddFileOrDir(sourceFile, destName string) error {
 		mode := int64(0755 | 040000)
 		th := TarHeader(destName, 0, mode)
 		th.Typeflag = tar.TypeDir
-		log.Printf("Header: %+v", th)
 		err = twh.Tw.WriteHeader(th)
 		if err != nil {
 			log.Printf("Can't add a header for '%s' using AddFileOrDir. Error: %v", destName, err)
@@ -141,7 +140,6 @@ func (twh *TarWriterHelper) AddParentDirs(filename string) error {
 				mode := int64(0755 | 040000)
 				th := TarHeader(acc, 0, mode)
 				th.Typeflag = tar.TypeDir
-				log.Printf("Header: %+v", th)
 				err := twh.Tw.WriteHeader(th)
 				if err != nil {
 					log.Printf("Can't add a header for '%s' using AddParentDirs.", acc)
