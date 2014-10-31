@@ -20,6 +20,7 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -71,10 +72,11 @@ func (twh *TarWriterHelper) AddFile(sourceFile, destName string) error {
 
 	//recurse as necessary
 	if finf.IsDir() {
-		return fmt.Errorf("Can't add a directory using TarAddFile. See AddFileOrDir")
+		return fmt.Errorf("Can't add a directory '%s' using TarAddFile. See AddFileOrDir", sourceFile)
 	}
 	err = twh.Tw.WriteHeader(TarHeader(destName, finf.Size(), int64(finf.Mode())))
 	if err != nil {
+		log.Printf("Can't add a header for '%s' using TarAddFile. Error: %v", destName, err)
 		return err
 	}
 	_, err = io.Copy(twh.Tw, fi)
@@ -95,8 +97,13 @@ func (twh *TarWriterHelper) AddFileOrDir(sourceFile, destName string) error {
 		if err != nil {
 			return err
 		}
-		err = twh.Tw.WriteHeader(TarHeader(destName, 0, int64(finf.Mode())))
+		mode := int64(0755 | 040000)
+		th := TarHeader(destName, 0, mode)
+		th.Typeflag = tar.TypeDir
+		log.Printf("Header: %+v", th)
+		err = twh.Tw.WriteHeader(th)
 		if err != nil {
+			log.Printf("Can't add a header for '%s' using AddFileOrDir. Error: %v", destName, err)
 			return err
 		}
 		err = filepath.Walk(sourceFile, func(path string, info os.FileInfo, err2 error) error {
@@ -132,8 +139,12 @@ func (twh *TarWriterHelper) AddParentDirs(filename string) error {
 			}
 			if !alreadyMade {
 				mode := int64(0755 | 040000)
-				err := twh.Tw.WriteHeader(TarHeader(acc, 0, mode))
+				th := TarHeader(acc, 0, mode)
+				th.Typeflag = tar.TypeDir
+				log.Printf("Header: %+v", th)
+				err := twh.Tw.WriteHeader(th)
 				if err != nil {
+					log.Printf("Can't add a header for '%s' using AddParentDirs.", acc)
 					return err
 				}
 				twh.DirsMade = append(twh.DirsMade, acc)
@@ -156,6 +167,19 @@ func (twh *TarWriterHelper) AddFiles(resources map[string]string) error {
 	}
 	return nil
 }
+// AddFiles adds resources from file system.
+// The key should be the destination filename/dirname. Value is the local filesystem path
+func (twh *TarWriterHelper) AddFilesOrDirs(resources map[string]string) error {
+	if resources != nil {
+		for name, localPath := range resources {
+			err := twh.AddFileOrDir(localPath, name)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
 
 // AddBytes adds a file by bytes with a given path
 func (twh *TarWriterHelper) AddBytes(bytes []byte, destName string, mode int64) error {
@@ -165,6 +189,7 @@ func (twh *TarWriterHelper) AddBytes(bytes []byte, destName string, mode int64) 
 	}
 	err = twh.Tw.WriteHeader(TarHeader(destName, int64(len(bytes)), mode))
 	if err != nil {
+		log.Printf("Can't add a header for '%s' using AddBytes.", destName)
 		return err
 	}
 	_, err = twh.Tw.Write(bytes)

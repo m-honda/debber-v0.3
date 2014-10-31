@@ -97,7 +97,7 @@ func (spgen *SourcePackageGenerator) GenOrigArchive() error {
 		return err
 	}
 	twh := NewTarWriterHelper(tgzw.Writer)
-	err = twh.AddFiles(spgen.OrigFiles)
+	err = twh.AddFilesOrDirs(spgen.OrigFiles)
 	if err != nil {
 		return err
 	}

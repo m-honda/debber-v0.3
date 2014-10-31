@@ -138,7 +138,8 @@ func (dgen *DebGenerator) GenDataArchive() error {
 		return err
 	}
 	dwh := NewTarWriterHelper(dataTgzw.Writer)
-	err = dwh.AddFiles(dgen.DataFiles)
+	//NOTE: files only for now
+	err = dwh.AddFilesOrDirs(dgen.DataFiles)
 	if err != nil {
 		return err
 	}
