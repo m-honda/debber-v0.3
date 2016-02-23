@@ -78,6 +78,8 @@ Version: {{.Package.Get "Version"}}
 Architecture: {{.Deb.Architecture}}
 {{if .Package.Get "Depends"}}Depends: {{.Package.Get "Depends"}}
 {{end}}Description: {{.Package.Get "Description"}}
+{{if .Package.Get "Installed-Size"}}Installed-Size: {{.Package.Get "Installed-Size"}}
+{{end}}
 `
 
 	// The debian control file (source debs) defines general package metadata (but not version information)

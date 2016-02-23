@@ -23,6 +23,7 @@ import (
 	"github.com/debber/debber-v0.3/targz"
 	"log"
 	"io"
+        "math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -82,6 +83,20 @@ func (dgen *DebGenerator) GenControlArchive() error {
 	controlTgzw, err := targz.NewWriterFromFile(archiveFilename)
 	if err != nil {
 		return err
+	}
+        for _, srcPath := range dgen.DataFiles {
+		stat, err := os.Stat(srcPath)
+		if err != nil {
+			// we have no src files
+			break
+		}
+		// per https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Installed-Size, bytes/1024 rounded up
+		if len(dgen.DebWriter.Control.BinaryParas()) > 0 {
+			installedSize := int64(math.Ceil(float64(stat.Size()) / 1024.0))
+			dgen.DebWriter.Control.BinaryParas()[0].Set("Installed-Size", fmt.Sprintf("%d", installedSize))
+		}
+		// the first file is our src and not a mapped file, so just break after one
+		break
 	}
 	templateVars := &TemplateData{Package: dgen.DebWriter.Control, Deb: dgen.DebWriter}
 	//templateVars.Deb = dgen.DebWriter
