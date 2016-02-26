@@ -36,20 +36,28 @@ func NewControlDefault(name, maintainerName, maintainerEmail, shortDescription, 
 	sourcePackage := (*ctrl)[0]
 	sourcePackage.Set(SourceFName, name)
 	sourcePackage.Set(MaintainerFName, fmt.Sprintf("%s <%s>", maintainerName, maintainerEmail))
-	sourcePackage.Set(DescriptionFName, fmt.Sprintf("%s\n%s", shortDescription, longDescription))
+	description := shortDescription
+	if longDescription != "" {
+		description = fmt.Sprintf("%s\n %s", shortDescription, longDescription)
+	}
+	sourcePackage.Set(DescriptionFName, description)
 	//BuildDepends is empty...
 	//add binary package
 	binPackage := NewPackage()
 	*ctrl = append(*ctrl, binPackage)
 	binPackage.Set(PackageFName, name)
-	binPackage.Set(DescriptionFName, fmt.Sprintf("%s\n%s", shortDescription, longDescription))
+	binPackage.Set(DescriptionFName, description)
 	//depends is empty
 	if addDevPackage {
 		devPackage := NewPackage()
 		*ctrl = append(*ctrl, devPackage)
 		devPackage.Set(PackageFName, name+"-dev")
 		devPackage.Set(ArchitectureFName, "all")
-		devPackage.Set(DescriptionFName, fmt.Sprintf("%s - development package\n%s", shortDescription, longDescription))
+		description = fmt.Sprintf("%s - development package", shortDescription)
+		if longDescription != "" {
+			description = fmt.Sprintf("%s - development package\n %s", shortDescription, longDescription)
+		}
+		devPackage.Set(DescriptionFName, description)
 	}
 	SetDefaults(ctrl)
 	return ctrl
