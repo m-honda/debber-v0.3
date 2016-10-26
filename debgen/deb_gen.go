@@ -337,7 +337,11 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 			//add changelog
 
 			// add resources ...
+			debianPath := filepath.Join(dgen.BuildParams.ResourcesDir, DebianDir)
 			f := func(path string, info os.FileInfo, err2 error) error {
+				if path == debianPath {
+					return filepath.SkipDir
+				}
 				if info != nil && !info.IsDir() {
 					rel, err := filepath.Rel(build.ResourcesDir, path)
 					if err == nil {
