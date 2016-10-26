@@ -19,14 +19,15 @@ package debgen
 import (
 	"compress/gzip"
 	"fmt"
-	"github.com/debber/debber-v0.3/deb"
-	"github.com/debber/debber-v0.3/targz"
-	"log"
 	"io"
-        "math"
+	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/debber/debber-v0.3/deb"
+	"github.com/debber/debber-v0.3/targz"
 )
 
 //DebGenerator generates source packages using templates and some overrideable behaviours
@@ -36,7 +37,6 @@ type DebGenerator struct {
 	DefaultTemplateStrings map[string]string
 	DataFiles              map[string]string
 }
-
 
 //NewDebGenerator is a factory for SourcePackageGenerator.
 func NewDebGenerator(debWriter *deb.Writer, buildParams *BuildParams) *DebGenerator {
@@ -84,7 +84,7 @@ func (dgen *DebGenerator) GenControlArchive() error {
 	if err != nil {
 		return err
 	}
-        for _, srcPath := range dgen.DataFiles {
+	for _, srcPath := range dgen.DataFiles {
 		stat, err := os.Stat(srcPath)
 		if err != nil {
 			// we have no src files
@@ -223,7 +223,7 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 		debpara.Set(deb.MaintainerFName, sourcePara.Get(deb.MaintainerFName))
 		debpara.Set(deb.PriorityFName, sourcePara.Get(deb.PriorityFName))
 		//log.Printf("debPara: %+v", debpara)
-		
+
 		dataFiles := map[string]string{}
 		//source package. TODO: find a better way to identify a sources-only .deb package.
 		if strings.HasSuffix(binPara.Get(deb.PackageFName), "-dev") {
@@ -235,25 +235,25 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 					}
 					log.Printf("sources matching glob: %+v", sources)
 				}*/
-/*
-			sourcesDestinationDir := sourcePara.Get(deb.SourceFName) + "_" + sourcePara.Get(deb.VersionFName)
-			for _, sourceFinder := range build.SourceFinders {
-				sourcesRelativeTo := sourceFinder.BaseDir
-				var sourceDir string
-				if sourceFinder.IncludeDir != "" {
-					sourceDir = sourceFinder.IncludeDir
-				} else {
-					sourceDir = sourceFinder.BaseDir
+			/*
+				sourcesDestinationDir := sourcePara.Get(deb.SourceFName) + "_" + sourcePara.Get(deb.VersionFName)
+				for _, sourceFinder := range build.SourceFinders {
+					sourcesRelativeTo := sourceFinder.BaseDir
+					var sourceDir string
+					if sourceFinder.IncludeDir != "" {
+						sourceDir = sourceFinder.IncludeDir
+					} else {
+						sourceDir = sourceFinder.BaseDir
+					}
+					sources, err := GlobForSources(sourcesRelativeTo, sourceDir, sourceFinder.Glob, sourceFinder.Target + sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
+					if err != nil {
+						return nil, fmt.Errorf("Error resolving sources: %v", err)
+					}
+					for k, v := range sources {
+						dataFiles[k] = v
+					}
 				}
-				sources, err := GlobForSources(sourcesRelativeTo, sourceDir, sourceFinder.Glob, sourceFinder.Target + sourcesDestinationDir, []string{build.TmpDir, build.DestDir})
-				if err != nil {
-					return nil, fmt.Errorf("Error resolving sources: %v", err)
-				}
-				for k, v := range sources {
-					dataFiles[k] = v
-				}
-			}
-*/
+			*/
 		} else {
 			// no sources
 		}
@@ -266,7 +266,7 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 		} else {
 			defer cf.Close()
 			changelogGz := filepath.Join(build.TmpDir, "changelog.gz")
-			gzf, err := os.OpenFile(changelogGz, os.O_CREATE | os.O_WRONLY, 0644)
+			gzf, err := os.OpenFile(changelogGz, os.O_CREATE|os.O_WRONLY, 0644)
 			defer gzf.Close()
 			if err != nil {
 				return nil, fmt.Errorf("Error creating temp gzip file for changelog: %v", err)
@@ -335,8 +335,6 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 				}
 			*/
 			//add changelog
-			
-	
 
 			// add resources ...
 			f := func(path string, info os.FileInfo, err2 error) error {
@@ -354,27 +352,27 @@ func PrepareBasicDebGen(ctrl *deb.Control, build *BuildParams) ([]*DebGenerator,
 			if err != nil {
 				return nil, fmt.Errorf("%v", err)
 			}
-/*
-			binFinders, ok := build.BinFinders[arch]
-			if ok {
-				for _, binFinder := range binFinders {
-					if binFinder.Glob != "" {
-						glob := filepath.Join(binFinder.BaseDir, binFinder.Glob)
-						bins, err := filepath.Glob(glob)
-						if err != nil {
-							return nil, fmt.Errorf("%v", err)
-						}
-						log.Printf("glob: %s, bins: %v", glob, bins)
-						//log.Printf("Binaries matching glob for '%s': %+v", arch, bins)
-						for _, bin := range bins {
-							target := binFinder.Target + "/" + bin
-							dgen.DataFiles[target] = bin
+			/*
+				binFinders, ok := build.BinFinders[arch]
+				if ok {
+					for _, binFinder := range binFinders {
+						if binFinder.Glob != "" {
+							glob := filepath.Join(binFinder.BaseDir, binFinder.Glob)
+							bins, err := filepath.Glob(glob)
+							if err != nil {
+								return nil, fmt.Errorf("%v", err)
+							}
+							log.Printf("glob: %s, bins: %v", glob, bins)
+							//log.Printf("Binaries matching glob for '%s': %+v", arch, bins)
+							for _, bin := range bins {
+								target := binFinder.Target + "/" + bin
+								dgen.DataFiles[target] = bin
+							}
 						}
 					}
 				}
-			}
-*/
-//			log.Printf("All data files: %v", dgen.DataFiles)
+			*/
+			//			log.Printf("All data files: %v", dgen.DataFiles)
 		}
 	}
 	return dgens, nil
