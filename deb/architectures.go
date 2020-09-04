@@ -22,8 +22,8 @@ import (
 )
 
 // Architecture - processor architecture (ARM/x86/AMD64) - as named by Debian.
-// At this stage: i386, armhf, amd64 and 'all'.
-// Note that 'any' is not valid for a binary package, and resolves to [i386, armhf, amd64]
+// At this stage: i386, armhf, amd64, arm64 and 'all'.
+// Note that 'any' is not valid for a binary package, and resolves to [i386, armhf, amd64, arm64]
 // TODO: armel
 // (Note that armhf = ARMv7 and armel = ARMv5. In Go terms, this is is is governed by the environment variable GOARM, and 7 is the default)
 type Architecture string
@@ -35,6 +35,8 @@ const (
 	ArchArmhf Architecture = "armhf"
 	//ArchAmd64 represents 64-bit machines.
 	ArchAmd64 Architecture = "amd64"
+	//ArchArm64 represents ARMv8
+	ArchArm64 Architecture = "arm64"
 	//ArchAll is for binary packages.
 	ArchAll Architecture = "all"
 )
@@ -67,13 +69,15 @@ func ResolveArches(arches string) ([]Architecture, error) {
 	}
 
 	if arches == "any" || arches == "" {
-		return []Architecture{ArchI386, ArchArmhf, ArchAmd64}, nil
+		return []Architecture{ArchI386, ArchArmhf, ArchAmd64, ArchArm64}, nil
 	} else if arches == string(ArchI386) {
 		return []Architecture{ArchI386}, nil
 	} else if arches == string(ArchArmhf) {
 		return []Architecture{ArchArmhf}, nil
 	} else if arches == string(ArchAmd64) {
 		return []Architecture{ArchAmd64}, nil
+	} else if arches == string(ArchArm64) {
+		return []Architecture{ArchArm64}, nil
 	} else if arches == string(ArchAll) {
 		return []Architecture{ArchAll}, nil
 	}

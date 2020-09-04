@@ -41,6 +41,7 @@ type BuildParams struct {
 /*	BinArmhfGlob      FileFinder
 	BinArmelGlob      FileFinder
 	BinAmd64Glob      FileFinder
+	BinArm64Glob      FileFinder
 	BinAnyGlob        FileFinder
 	ResourcesDir      string
 	ResourcesGlob     string

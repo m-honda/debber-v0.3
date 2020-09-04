@@ -24,6 +24,7 @@ func Example_genBinaryPackage() {
 	artifacts[deb.ArchAmd64].MappedFiles = map[string]string{"/usr/bin/a": "_out/a.amd64"}
 	artifacts[deb.ArchI386].MappedFiles = map[string]string{"/usr/bin/a": "_out/a.i386"}
 	artifacts[deb.ArchArmhf].MappedFiles = map[string]string{"/usr/bin/a": "_out/a.armhf"}
+	artifacts[deb.ArchArm64].MappedFiles = map[string]string{"/usr/bin/a": "_out/a.arm64"}
 
 	prep() //prepare files for packaging using some other means.
 
@@ -45,6 +46,7 @@ func prep() error {
 		"amd64": []string{"_out/a.amd64"},
 		"i386":  []string{"_out/a.i386"},
 		"armhf": []string{"_out/a.armhf"}}
+		"arm64": []string{"_out/a.arm64"}}
 	err := createExes(exesMap)
 	if err != nil {
 		log.Fatalf("%v", err)

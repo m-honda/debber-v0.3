@@ -58,7 +58,7 @@ const (
 	DescriptionFName = "Description"
 	MaintainerFName  = "Maintainer"
 
-	ArchitectureFName = "Architecture" // Supported values: "all", "x386", "amd64", "armhf". TODO: armel
+	ArchitectureFName = "Architecture" // Supported values: "all", "x386", "amd64", "armhf", "arm64". TODO: armel
 
 	DependsFName    = "Depends" // Depends
 	RecommendsFName = "Recommends"

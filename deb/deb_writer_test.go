@@ -18,6 +18,7 @@ func Example_buildBinaryDeb() {
 		"amd64": []string{filepath.Join(deb.TempDirDefault, "/a.amd64")},
 		"i386":  []string{filepath.Join(deb.TempDirDefault, "/a.i386")},
 		"armhf": []string{filepath.Join(deb.TempDirDefault, "/a.armhf")}}
+		"arm64": []string{filepath.Join(deb.TempDirDefault, "/a.arm64")}}
 	err := createExes(exesMap)
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -29,6 +30,7 @@ func Example_buildBinaryDeb() {
 	artifacts[deb.ArchAmd64].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.amd64")}
 	artifacts[deb.ArchI386].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.i386")}
 	artifacts[deb.ArchArmhf].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.armhf")}
+	artifacts[deb.ArchArm64].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.arm64")}
 	buildDeb := func(art *deb.Writer) error {
 		//generate artifact here ...
 		return nil
@@ -49,6 +51,7 @@ func Test_buildBinaryDeb(t *testing.T) {
 		"amd64": []string{filepath.Join(deb.TempDirDefault, "a.amd64")},
 		"i386":  []string{filepath.Join(deb.TempDirDefault, "a.i386")},
 		"armhf": []string{filepath.Join(deb.TempDirDefault, "a.armhf")}}
+		"arm64": []string{filepath.Join(deb.TempDirDefault, "a.arm64")}}
 	err := createExes(exesMap)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -60,6 +63,7 @@ func Test_buildBinaryDeb(t *testing.T) {
 	artifacts[deb.ArchAmd64].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.amd64")}
 	artifacts[deb.ArchI386].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.i386")}
 	artifacts[deb.ArchArmhf].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.armhf")}
+	artifacts[deb.ArchArm64].MappedFiles = map[string]string{"/usr/bin/a": filepath.Join(deb.TempDirDefault, "/a.arm64")}
 	buildDeb := func(art *deb.Writer) error {
 		archiveFilename := filepath.Join(deb.TempDirDefault, art.ControlArchive)
 		controlTgzw, err := targz.NewWriterFromFile(archiveFilename)

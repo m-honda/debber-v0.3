@@ -16,7 +16,7 @@ func changelogAddEntryTask(args []string) error {
 	var version string
 	fs.StringVar(&version, "version", "", "Package Version")
 	var architecture string
-	fs.StringVar(&architecture, "arch", "all", "Architectures [any,386,armhf,amd64,all]")
+	fs.StringVar(&architecture, "arch", "all", "Architectures [any,386,armhf,amd64,arm64,all]")
 	var distribution string
 	fs.StringVar(&distribution, "distribution", "unstable", "Distribution (unstable is recommended until Debian accept the package into testing/stable)")
 	var entry string
