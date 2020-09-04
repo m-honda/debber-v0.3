@@ -3,7 +3,7 @@ package targz_test
 import (
 	"archive/tar"
 	"fmt"
-	"github.com/debber/debber-v0.3/targz"
+	"github.com/m-honda/debber-v0.3/targz"
 	"io"
 	"log"
 	"os"

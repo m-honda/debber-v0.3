@@ -2,8 +2,8 @@ package deb_test
 
 import (
 	"archive/tar"
-	"github.com/debber/debber-v0.3/deb"
-	"github.com/debber/debber-v0.3/targz"
+	"github.com/m-honda/debber-v0.3/deb"
+	"github.com/m-honda/debber-v0.3/targz"
 	"log"
 	"os"
 	"path/filepath"

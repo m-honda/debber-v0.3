@@ -18,8 +18,8 @@ package debgen
 
 import (
 	"fmt"
-	"github.com/debber/debber-v0.3/deb"
-	"github.com/debber/debber-v0.3/targz"
+	"github.com/m-honda/debber-v0.3/deb"
+	"github.com/m-honda/debber-v0.3/targz"
 	"io/ioutil"
 	"log"
 	"os"

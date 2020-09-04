@@ -19,8 +19,8 @@ package debgen
 import (
 	"compress/gzip"
 	"fmt"
-	"github.com/debber/debber-v0.3/deb"
-	"github.com/debber/debber-v0.3/targz"
+	"github.com/m-honda/debber-v0.3/deb"
+	"github.com/m-honda/debber-v0.3/targz"
 	"log"
 	"io"
         "math"

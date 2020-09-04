@@ -18,7 +18,7 @@ package debgen
 
 import (
 	"bytes"
-	"github.com/debber/debber-v0.3/deb"
+	"github.com/m-honda/debber-v0.3/deb"
 	"io/ioutil"
 	"os"
 	"text/template"

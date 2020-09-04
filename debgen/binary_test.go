@@ -1,8 +1,8 @@
 package debgen_test
 
 import (
-	"github.com/debber/debber-v0.3/deb"
-	"github.com/debber/debber-v0.3/debgen"
+	"github.com/m-honda/debber-v0.3/deb"
+	"github.com/m-honda/debber-v0.3/debgen"
 	"log"
 	"os"
 	"path/filepath"
